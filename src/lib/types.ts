@@ -27,6 +27,9 @@ export type Member = {
   is_public: boolean;
 };
 
+/** Data anggota yang boleh tampil publik. */
+export type PublicMember = Pick<Member, "id" | "full_name" | "nickname" | "angkatan" | "status" | "photo_url">;
+
 export type MemberPrivate = {
   member_id: string;
   nim: string | null;

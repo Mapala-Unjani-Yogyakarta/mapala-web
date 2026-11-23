@@ -8,7 +8,7 @@ Website organisasi Mapala: landing page, arsip anggota, periode kepengurusan, da
 
 | Bagian | Isi |
 |---|---|
-| Publik | Beranda, Pengurus, Arsip Periode, Gallery (album + pratinjau foto) |
+| Publik | Beranda, Pengurus, Arsip Periode, **Anggota per angkatan** (cari + filter status/angkatan), Gallery (album + pratinjau foto) |
 | Anggota (tanpa login) | Formulir isi data `/isi-data`, ubah data lewat tautan pribadi `/ubah/…` |
 | Panel admin `/admin` | Dashboard, Verifikasi, Anggota (cari, filter, impor/ekspor CSV), Periode & Pengurus, Gallery, Konten Website, Akun Pengurus |
 
@@ -94,6 +94,18 @@ Bagian situs publik ada di `src/components/site/`: `hero`, `mountains`, `scenes`
 **Aksesibilitas & performa:** animasi hero mati otomatis bila pengguna memilih "kurangi gerakan" di perangkatnya. Gunung dibuat dari SVG (tanpa gambar), jadi ringan dan tajam di semua layar. Untuk mengganti dengan foto sendiri, ganti isi `MountainLayer` pada `hero.tsx` dengan elemen `<img>` bertingkat.
 
 **Aturan agar tetap rapi:** jangan menulis warna bawaan Tailwind (`gray-500`, `green-600`, dll.) atau kode warna `#xxxxxx` di komponen. Pakai token di atas.
+
+## Halaman Anggota publik
+
+`/anggota` menampilkan anggota yang **ditandai tampil di website** (kolom "Tampilkan di website" di profil anggota), dikelompokkan per angkatan, dengan pencarian dan filter status/angkatan. Yang tampil hanya nama, nama lapangan, angkatan, status, dan foto. Anggota berstatus **Non-aktif** tidak ditampilkan. Angkatan diurutkan dari yang terbaru; angka Romawi (XV) dan angka biasa (2022) sama-sama dikenali.
+
+## Aturan pengisian angkatan
+
+Angkatan adalah **nomor urut** (bukan tahun masuk) dan selalu disimpan sebagai angka Romawi (XV = angkatan ke-15).
+- Formulir anggota dan panel admin memakai **daftar pilihan**, jadi tidak bisa salah ketik. Daftar mencakup angkatan tertinggi yang sudah ada + 2, terbaru di atas.
+- Server tetap memeriksa dan merapikan isian: `15`, `xv`, `Angkatan ke-15` → `XV`. Tahun (2022), nomor di luar 1–999, atau Romawi salah tulis (IIII) **ditolak**.
+- Kolom angkatan **wajib** (juga di impor CSV).
+- Batas angkatan tertinggi diatur oleh `ANGKATAN_MAX` di `src/lib/utils.ts`.
 
 ## Alur kerja sehari-hari
 

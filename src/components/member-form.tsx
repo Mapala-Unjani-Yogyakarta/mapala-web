@@ -21,11 +21,13 @@ export function MemberForm({
   defaults,
   token,
   currentPhoto,
+  angkatanOptions,
 }: {
   action: (prev: FormState, fd: FormData) => Promise<FormState>;
   defaults?: MemberDefaults;
   token?: string;
   currentPhoto?: string | null;
+  angkatanOptions?: string[];
 }) {
   const photoRef = useRef<Blob | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -66,7 +68,7 @@ export function MemberForm({
         </label>
       </div>
 
-      <MemberFields d={defaults} />
+      <MemberFields d={defaults} angkatanOptions={angkatanOptions} />
 
       <Field label="Foto" hint="Foto wajah/setengah badan. Otomatis dikecilkan sebelum dikirim.">
         <div className="flex items-center gap-4">

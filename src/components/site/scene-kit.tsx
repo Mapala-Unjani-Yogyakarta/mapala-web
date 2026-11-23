@@ -84,6 +84,26 @@ export function rolling(seed: number, base: number, amp: number, wave: number, j
   return `M-40 ${H} L${pts.join(" L")} L${W + 40} ${H}Z`;
 }
 
+/** Tinggi (y) permukaan `rolling()` pada posisi x, tanpa jitter. Untuk menaruh figur di atas bukit. */
+export function rollingAt(seed: number, base: number, amp: number, wave: number) {
+  const r = rng(seed);
+  const ph = [r() * 6.28, r() * 6.28, r() * 6.28];
+  return (x: number) => base - amp * (0.55 * Math.sin(x / wave + ph[0]) + 0.3 * Math.sin(x / (wave * 0.45) + ph[1]) + 0.15 * Math.sin(x / (wave * 0.2) + ph[2]));
+}
+
+/** Siluet pendaki: kepala, badan, ransel, kaki, dan tongkat. (x,y) = titik pijakan. */
+export function Hiker({ x, y, s = 1, color = "#0c1f1f", flip = false }: { x: number; y: number; s?: number; color?: string; flip?: boolean }) {
+  return (
+    <g transform={`translate(${x.toFixed(0)} ${y.toFixed(0)}) scale(${flip ? -s : s} ${s})`} fill={color} stroke={color}>
+      <circle cx="0" cy="-37" r="5.5" stroke="none" />
+      <rect x="-5.5" y="-31" width="11" height="18" rx="4.5" stroke="none" />
+      <rect x="-12" y="-30" width="8" height="15" rx="3.5" stroke="none" />
+      <path d="M-3.5 -14 L-8 0 M3.5 -14 L6.5 0" strokeWidth="4.2" strokeLinecap="round" fill="none" />
+      <path d="M8 -27 L15 0" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+    </g>
+  );
+}
+
 function tree(x: number, by: number, h: number, w: number, tiers = 4) {
   const right: [number, number][] = [];
   for (let i = 1; i <= tiers; i++) {

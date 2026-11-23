@@ -1,6 +1,6 @@
 import "server-only";
 import { createPublicClient } from "./supabase/public";
-import type { Album, Period, Photo, PositionWithMember, SiteSettings } from "./types";
+import type { Album, Period, Photo, PositionWithMember, PublicMember, SiteSettings } from "./types";
 
 /** Query publik: bila database belum siap, tampilkan halaman kosong alih-alih error. */
 async function safe<T>(fn: () => PromiseLike<T>, fallback: T): Promise<T> {
@@ -39,7 +39,9 @@ export function getStats() {
   return safe(async () => {
     const db = createPublicClient();
     const count = async (table: string) => {
-      const { count } = await db.from(table).select("id", { count: "exact", head: true });
+      let q = db.from(table).select("id", { count: "exact", head: true });
+      if (table === "members") q = q.neq("status", "non_aktif"); // sama dengan daftar di halaman Anggota
+      const { count } = await q;
       return count ?? 0;
     };
     const [members, periods, albums, photos] = await Promise.all([
@@ -130,4 +132,25 @@ export function getPhotos(albumId: string) {
       .order("created_at", { ascending: true });
     return (data ?? []) as Photo[];
   }, [] as Photo[]);
+}
+
+/** Anggota yang ditandai tampil publik (RLS), tanpa yang non-aktif. Hanya kolom publik. */
+export function getPublicMembers() {
+  return safe(async () => {
+    const { data } = await createPublicClient()
+      .from("members")
+      .select("id, full_name, nickname, angkatan, status, photo_url")
+      .neq("status", "non_aktif")
+      .order("full_name", { ascending: true })
+      .limit(3000);
+    return (data ?? []) as PublicMember[];
+  }, [] as PublicMember[]);
+}
+
+/** Semua nilai angkatan yang sudah ada (untuk menentukan rentang pilihan di formulir). */
+export function getAngkatanValues() {
+  return safe(async () => {
+    const { data } = await createPublicClient().from("members").select("angkatan").not("angkatan", "is", null).limit(3000);
+    return ((data ?? []) as { angkatan: string | null }[]).map((r) => r.angkatan);
+  }, [] as (string | null)[]);
 }

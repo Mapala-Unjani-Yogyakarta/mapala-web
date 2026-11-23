@@ -1,10 +1,13 @@
 import { Field, inputCls } from "./ui";
+import { angkatanValue, buildAngkatanOptions } from "@/lib/utils";
 
 export type MemberDefaults = Partial<Record<string, string | null>>;
 
 /** Kolom isian anggota yang dipakai bersama oleh formulir publik dan panel admin. */
-export function MemberFields({ d = {} }: { d?: MemberDefaults }) {
+export function MemberFields({ d = {}, angkatanOptions }: { d?: MemberDefaults; angkatanOptions?: string[] }) {
   const v = (k: string) => d[k] ?? "";
+  const options = angkatanOptions ?? buildAngkatanOptions([]);
+  const currentAngkatan = v("angkatan");
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <Field label="Nama lengkap" required className="sm:col-span-2">
@@ -13,8 +16,18 @@ export function MemberFields({ d = {} }: { d?: MemberDefaults }) {
       <Field label="Nama lapangan" hint="Julukan di organisasi, jika ada">
         <input name="nickname" maxLength={60} defaultValue={v("nickname")} className={inputCls} />
       </Field>
-      <Field label="Angkatan" hint="Contoh: XV atau 2022">
-        <input name="angkatan" maxLength={30} defaultValue={v("angkatan")} className={inputCls} />
+      <Field label="Angkatan" required hint="Nomor urut angkatan, bukan tahun masuk. Contoh: XV = angkatan ke-15. Tidak tahu? Tanya pengurus.">
+        <select name="angkatan" required defaultValue={currentAngkatan} className={inputCls}>
+          <option value="" disabled>
+            Pilih angkatan…
+          </option>
+          {currentAngkatan && !options.includes(currentAngkatan) && <option value={currentAngkatan}>{currentAngkatan} (isian lama, sebaiknya diganti)</option>}
+          {options.map((a) => (
+            <option key={a} value={a}>
+              Angkatan {a} (ke-{angkatanValue(a)})
+            </option>
+          ))}
+        </select>
       </Field>
       <Field label="NIM">
         <input name="nim" maxLength={30} defaultValue={v("nim")} className={inputCls} inputMode="numeric" />

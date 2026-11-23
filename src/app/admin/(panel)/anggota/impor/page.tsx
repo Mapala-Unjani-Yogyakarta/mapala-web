@@ -17,6 +17,7 @@ export default async function ImportPage() {
           <li>Simpan sebagai <strong>CSV</strong> (File → Save As → CSV UTF-8).</li>
           <li>Pilih file di bawah, lalu klik Impor. Baris dengan NIM yang sudah terdaftar akan dilewati.</li>
           <li>Kolom <code>status</code> berisi: aktif, alumni, luar_biasa, atau non_aktif (kosong = aktif).</li>
+          <li>Kolom <code>angkatan</code> <strong>wajib</strong>: isi nomor angkatan, <code>XV</code> atau <code>15</code> (otomatis dirapikan jadi XV). Tahun masuk seperti 2022 ditolak.</li>
         </ol>
         <ImportForm />
       </Card>

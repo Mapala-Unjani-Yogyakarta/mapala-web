@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { Badge, Card, PageHeader } from "@/components/ui";
 import { ActionForm, SubmitButton } from "@/components/form";
-import { siteUrl, waNumber } from "@/lib/utils";
+import { buildAngkatanOptions, siteUrl, waNumber } from "@/lib/utils";
 import { MemberAdminForm } from "../member-admin-form";
 import { EditLinkPanel } from "../edit-link-panel";
 import { deleteMember } from "../actions";
@@ -11,14 +11,16 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
   const { id } = await params;
   const { supabase } = await requireAdmin();
 
-  const [{ data: member }, { data: priv }, { data: history }] = await Promise.all([
+  const [{ data: member }, { data: priv }, { data: history }, { data: allAngkatan }] = await Promise.all([
     supabase.from("members").select("*").eq("id", id).maybeSingle(),
     supabase.from("member_private").select("*").eq("member_id", id).maybeSingle(),
     supabase
       .from("positions")
       .select("id, title, division, periods(name, year_start)")
       .eq("member_id", id),
+    supabase.from("members").select("angkatan"),
   ]);
+  const angkatanOptions = buildAngkatanOptions(((allAngkatan ?? []) as { angkatan: string | null }[]).map((r) => r.angkatan));
   if (!member) notFound();
 
   const link = priv?.edit_token ? `${siteUrl()}/ubah/${priv.edit_token}` : null;
@@ -31,7 +33,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
       <div className="space-y-6">
         <Card>
           <h2 className="mb-4 font-semibold">Data anggota</h2>
-          <MemberAdminForm id={id} defaults={defaults} />
+          <MemberAdminForm id={id} defaults={defaults} angkatanOptions={angkatanOptions} />
         </Card>
 
         <Card>

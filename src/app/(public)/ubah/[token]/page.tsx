@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { MemberForm } from "@/components/member-form";
 import { createServiceClient } from "@/lib/supabase/admin";
 import { PageHero } from "@/components/site/page-hero";
+import { getAngkatanValues } from "@/lib/data";
+import { buildAngkatanOptions } from "@/lib/utils";
 import { submitMemberForm } from "../../isi-data/actions";
 
 // Halaman pribadi: jangan diindeks mesin pencari dan jangan di-cache.
@@ -27,6 +29,8 @@ export default async function UbahDataPage({ params }: { params: Promise<{ token
     defaults = null;
   }
 
+  const angkatanOptions = buildAngkatanOptions(await getAngkatanValues());
+
   return (
     <>
       <PageHero
@@ -39,7 +43,7 @@ export default async function UbahDataPage({ params }: { params: Promise<{ token
           <>
             <p className="text-sm text-muted">Jangan bagikan tautan ini ke orang lain.</p>
             <div className="panel mt-4 p-5 sm:p-8">
-              <MemberForm action={submitMemberForm} defaults={defaults} token={token} currentPhoto={photo} />
+              <MemberForm action={submitMemberForm} defaults={defaults} token={token} currentPhoto={photo} angkatanOptions={angkatanOptions} />
             </div>
           </>
         ) : (

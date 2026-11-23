@@ -7,7 +7,7 @@ import { Field, inputCls } from "@/components/ui";
 import { STATUS_OPTIONS } from "@/lib/utils";
 import { saveMember } from "./actions";
 
-export function MemberAdminForm({ defaults, id }: { defaults?: MemberDefaults; id?: string }) {
+export function MemberAdminForm({ defaults, id, angkatanOptions }: { defaults?: MemberDefaults; id?: string; angkatanOptions?: string[] }) {
   const d = defaults ?? {};
   return (
     <ActionForm action={saveMember} className="space-y-6">
@@ -17,7 +17,7 @@ export function MemberAdminForm({ defaults, id }: { defaults?: MemberDefaults; i
         <ImageField name="photo_url" bucket="members" folder="admin" defaultUrl={d.photo_url} maxDim={800} />
       </Field>
 
-      <MemberFields d={d} />
+      <MemberFields d={d} angkatanOptions={angkatanOptions} />
 
       <div className="grid gap-4 border-t border-line pt-6 sm:grid-cols-2">
         <Field label="Nomor anggota">

@@ -3,7 +3,7 @@
  * Urutan beranda mengikuti waktu: pagi berkabut → siang → senja → malam → fajar.
  * Ubah warna di sini (kode hex di atribut fill). Lapisan bergerak lewat atribut `depth`.
  */
-import { Art, Birds, Glow, Layer, Mist, Stars, Tent, W, H, pines, ridgePath, rolling } from "./scene-kit";
+import { Art, Birds, Glow, Hiker, Layer, Mist, Stars, Tent, W, H, pines, ridgePath, rolling, rollingAt } from "./scene-kit";
 import type { Peak } from "./scene-kit";
 
 const sunLayer = (children: React.ReactNode, depth = 0.3) => (
@@ -294,6 +294,44 @@ export function HeroLake() {
           </g>
           {Array.from({ length: 14 }, (_, i) => (
             <rect key={i} x={100 + ((i * 157) % 1350)} y={water + 20 + i * 11} width={80 + ((i * 61) % 150)} height="2" rx="1" fill="#fff" opacity={0.28} />
+          ))}
+        </Art>
+      </Layer>
+    </>
+  );
+}
+
+/** Hero "Anggota": rombongan pendaki berjalan di punggungan saat sore keemasan. */
+export function HeroTrail() {
+  const ridge = rollingAt(81, 852, 20, 330);
+  const hikers = [
+    { x: 330, s: 1.5 },
+    { x: 440, s: 1.4, flip: false },
+    { x: 545, s: 1.55 },
+    { x: 650, s: 1.4 },
+    { x: 760, s: 1.5, flip: false },
+    { x: 868, s: 1.45 },
+    { x: 975, s: 1.55 },
+    { x: 1085, s: 1.4 },
+  ];
+  return (
+    <>
+      <Layer pos="top" depth={0.36} h="50%"><Stars seed={21} count={46} maxY={300} /></Layer>
+      {sunLayer(<Glow className="bottom-[2%] right-[8%] h-72 w-[55%]" color="255 205 140" opacity={0.75} />, 0.3)}
+      <Layer depth={0.3} h="62%">
+        <Art>
+          <circle cx="1130" cy="690" r="62" fill="#ffe9bd" />
+          <path d={ridgePath([{ x: 240, h: 250, l: 300, r: 300 }, { x: 760, h: 300, l: 340, r: 340 }, { x: 1320, h: 230, l: 300, r: 300 }], 800, 12, 91)} fill="#3a6c76" />
+        </Art>
+      </Layer>
+      <Layer depth={0.22} h="52%">
+        <Art><path d={pines(92, 842, 100, 170, 40)} fill="#1b4a4e" /></Art>
+      </Layer>
+      <Layer depth={0.1} h="44%">
+        <Art>
+          <path d={rolling(81, 852, 20, 330)} fill="#102f2e" />
+          {hikers.map((h, i) => (
+            <Hiker key={i} x={h.x} y={ridge(h.x) + 2} s={h.s} color="#0a1c1c" />
           ))}
         </Art>
       </Layer>

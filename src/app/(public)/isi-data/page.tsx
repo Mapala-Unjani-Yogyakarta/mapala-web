@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { MemberForm } from "@/components/member-form";
 import { PageHero } from "@/components/site/page-hero";
+import { getAngkatanValues } from "@/lib/data";
+import { buildAngkatanOptions } from "@/lib/utils";
 import { submitMemberForm } from "./actions";
 
 export const metadata: Metadata = { title: "Isi Data Anggota" };
 
-export default function IsiDataPage() {
+export default async function IsiDataPage() {
+  const angkatanOptions = buildAngkatanOptions(await getAngkatanValues());
   return (
     <>
       <PageHero
@@ -18,7 +21,7 @@ export default function IsiDataPage() {
           Sudah pernah terdata dan ingin mengubah data? Minta <strong>tautan pribadi</strong> ke pengurus.
         </p>
         <div className="panel mt-6 p-5 sm:p-8">
-          <MemberForm action={submitMemberForm} />
+          <MemberForm action={submitMemberForm} angkatanOptions={angkatanOptions} />
         </div>
       </div>
     </>

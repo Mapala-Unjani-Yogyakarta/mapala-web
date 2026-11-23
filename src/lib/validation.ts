@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { normalizeAngkatan } from "./utils";
 
 const phone = z
   .string()
@@ -11,7 +12,19 @@ const optionalText = (max: number) => z.string().trim().max(max, `Maksimal ${max
 export const memberFieldsSchema = z.object({
   full_name: z.string().trim().min(3, "Nama lengkap minimal 3 karakter").max(120, "Nama terlalu panjang"),
   nickname: optionalText(60),
-  angkatan: optionalText(30),
+  // Wajib & dirapikan: "15" / "angkatan xv" → "XV". Tahun masuk (2022) ditolak.
+  angkatan: z
+    .string()
+    .trim()
+    .min(1, "Pilih angkatan")
+    .transform((v, ctx) => {
+      const n = normalizeAngkatan(v);
+      if (!n) {
+        ctx.addIssue({ code: "custom", message: "Angkatan tidak valid. Pilih dari daftar atau isi nomor angkatan (mis. XV atau 15), bukan tahun masuk." });
+        return z.NEVER;
+      }
+      return n;
+    }),
   nim: optionalText(30),
   email: z.union([z.literal(""), z.string().trim().max(120).email("Format email tidak valid")]),
   phone,
