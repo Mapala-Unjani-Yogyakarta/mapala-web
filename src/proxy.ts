@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Menyegarkan sesi login pengurus agar tidak kedaluwarsa saat memakai /admin.
+// Menyegarkan sesi login (pengurus & penulis) agar tidak kedaluwarsa saat memakai /admin atau /penulis.
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -22,4 +22,4 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
-export const config = { matcher: ["/admin/:path*"] };
+export const config = { matcher: ["/admin/:path*", "/penulis/:path*"] };

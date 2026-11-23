@@ -9,6 +9,7 @@ Website organisasi Mapala: landing page, arsip anggota, periode kepengurusan, da
 | Bagian | Isi |
 |---|---|
 | Publik | Beranda, Pengurus, Arsip Periode, **Anggota per angkatan** (cari + filter status/angkatan), Gallery (album + pratinjau foto) |
+| Alumni & Blog | Halaman `/alumni` (profesi, kota, kontak yang diizinkan), `/blog` (berita + tulisan anggota), Ruang Penulis `/penulis` (masuk lewat tautan email, tanpa kata sandi) |
 | Anggota (tanpa login) | Formulir isi data `/isi-data`, ubah data lewat tautan pribadi `/ubah/…` |
 | Panel admin `/admin` | Dashboard, Verifikasi, Anggota (cari, filter, impor/ekspor CSV), Periode & Pengurus, Gallery, Konten Website, Akun Pengurus |
 
@@ -95,6 +96,28 @@ Bagian situs publik ada di `src/components/site/`: `hero`, `mountains`, `scenes`
 
 **Aturan agar tetap rapi:** jangan menulis warna bawaan Tailwind (`gray-500`, `green-600`, dll.) atau kode warna `#xxxxxx` di komponen. Pakai token di atas.
 
+## Alumni, Blog & Penulis
+
+**Wajib: jalankan migrasi database dulu.** Buka Supabase → SQL Editor → tempel seluruh isi [`supabase/migrations/0002_alumni_blog.sql`](supabase/migrations/0002_alumni_blog.sql) → **Run**, lalu deploy. (Untuk proyek baru: jalankan `schema.sql` dulu, baru `0002`.) Migrasi ini menambah kolom profil alumni, tabel penulis dan tulisan, aturan keamanan (RLS), dan bucket foto `blog`. Jalankan hanya SEKALI.
+
+**Alumni.** Profil alumni diisi anggota sendiri lewat formulir `/isi-data` atau tautan pribadi (bagian "Profil alumni", opsional), atau oleh pengurus di panel. Yang tampil di `/alumni` hanya anggota berstatus **Alumni** dan hanya isian profil yang diisi (profesi, tempat kerja, kota, serta Instagram/LinkedIn/WhatsApp yang sengaja diisi untuk publik). NIM, HP, email, dan alamat pribadi tidak pernah tampil. Semua perubahan tetap lewat verifikasi pengurus.
+
+**Blog & Berita.**
+- **Berita** ditulis pengurus (Panel → Blog & Berita → Tulis baru → Terbitkan).
+- **Blog** ditulis anggota yang diberi akses penulis.
+- Isi memakai Markdown sederhana dengan tombol format, sisipkan foto, dan pratinjau. HTML mentah tidak dirender, tautan berbahaya dibuang, dan gambar hanya boleh dari penyimpanan sendiri.
+
+**Alur penulis (tanpa kata sandi):**
+1. Pengurus: Panel → **Penulis** → pilih anggota (atau isi email) → **Jadikan penulis**.
+2. Penulis membuka `/penulis/masuk`, memasukkan email, lalu membuka tautan yang dikirim ke emailnya **di browser yang sama**.
+3. Penulis menulis → **Simpan draf** → **Ajukan untuk ditinjau**.
+4. Pengurus: Panel → **Blog & Berita** → tinjau → **Setujui & terbitkan** atau **Kembalikan** dengan catatan. Penulis tidak bisa menerbitkan sendiri dan tidak bisa mengubah tulisan orang lain atau yang sudah terbit (dijaga di database, bukan hanya di tampilan).
+
+**Pengaturan Supabase yang wajib agar tautan masuk berfungsi** (Authentication → URL Configuration):
+- **Site URL**: alamat websitemu, mis. `https://mapalaunjaniyogyakarta.vercel.app`
+- **Redirect URLs**: tambahkan `https://mapalaunjaniyogyakarta.vercel.app/auth/callback` (dan `http://localhost:3000/auth/callback` bila menguji di komputer).
+- **Batas email**: layanan email bawaan Supabase sangat terbatas (hanya beberapa email per jam untuk seluruh proyek). Untuk penulis yang banyak, pasang SMTP sendiri (mis. Resend, gratis) di Authentication → SMTP Settings.
+
 ## Halaman Anggota publik
 
 `/anggota` menampilkan anggota yang **ditandai tampil di website** (kolom "Tampilkan di website" di profil anggota), dikelompokkan per angkatan, dengan pencarian dan filter status/angkatan. Yang tampil hanya nama, nama lapangan, angkatan, status, dan foto. Anggota berstatus **Non-aktif** tidak ditampilkan. Angkatan diurutkan dari yang terbaru; angka Romawi (XV) dan angka biasa (2022) sama-sama dikenali.
@@ -135,6 +158,8 @@ src/app/(public)/      halaman publik + formulir anggota
 src/app/admin/         login + panel admin (halaman dan server action)
 src/components/        komponen UI, formulir, unggah foto
 src/components/site/   header, footer, hero, kartu situs publik
+src/app/penulis/       Ruang Penulis (masuk lewat tautan email, tulis, ajukan)
+src/lib/post-actions.ts aksi simpan/tinjau/hapus tulisan
 src/app/globals.css    TEMA: warna, bentuk, font, pola komponen
 src/lib/               klien Supabase, validasi, akses data, util
 supabase/schema.sql    skema database + aturan keamanan (RLS) + bucket foto

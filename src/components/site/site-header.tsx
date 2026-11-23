@@ -24,7 +24,7 @@ function useInHeroZone() {
 export function SiteHeader({ orgName }: { orgName: string }) {
   const pathname = usePathname();
   const inHero = useInHeroZone();
-  const hasSceneHero = pathname === "/" || pathname.startsWith("/periode") || pathname.startsWith("/gallery") || pathname.startsWith("/anggota");
+  const hasSceneHero = pathname === "/" || pathname.startsWith("/periode") || pathname.startsWith("/gallery") || pathname.startsWith("/anggota") || pathname.startsWith("/alumni") || pathname === "/blog";
   const overHero = hasSceneHero && inHero;
   // `key` mereset menu mobile setiap pindah halaman
   return <HeaderBar key={pathname} orgName={orgName} overHero={overHero} pathname={pathname} />;
@@ -43,8 +43,8 @@ function HeaderBar({ orgName, overHero, pathname }: { orgName: string; overHero:
           <span className="max-w-[9.5rem] truncate sm:max-w-none">{orgName}</span>
         </Link>
 
-        <nav aria-label="Menu utama" className="hidden items-center gap-7 md:flex">
-          {NAV.map((n) => (
+        <nav aria-label="Menu utama" className="hidden items-center gap-5 lg:gap-6 md:flex">
+          {NAV.filter((n) => n.header !== false).map((n) => (
             <Link
               key={n.href}
               href={n.href}

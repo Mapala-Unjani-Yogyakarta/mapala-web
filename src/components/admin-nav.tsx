@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Camera, CalendarRange, FileText, LayoutDashboard, ShieldCheck, UserCog, Users, type LucideIcon } from "lucide-react";
+import { Camera, CalendarRange, FileText, LayoutDashboard, PenLine, ShieldCheck, UserCheck, UserCog, Users, type LucideIcon } from "lucide-react";
 import { cx } from "@/lib/utils";
 
 const ICONS: Record<string, LucideIcon> = {
@@ -13,6 +13,8 @@ const ICONS: Record<string, LucideIcon> = {
   gallery: Camera,
   konten: FileText,
   pengurus: UserCog,
+  tulisan: PenLine,
+  penulis: UserCheck,
 };
 
 export type AdminLink = { href: string; label: string; icon: keyof typeof ICONS; badge?: number };

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Ridge } from "./mountains";
 import { Parallax } from "./parallax";
-import { HeroCamp, HeroHills, HeroLake, HeroTrail, PineSeam, SceneDawn, SceneDusk, SceneGolden, SceneNight, ScenePines } from "./scenes";
+import { HeroCabin, HeroCamp, HeroHills, HeroLake, HeroSummit, HeroTrail, PineSeam, SceneDawn, SceneDusk, SceneGolden, SceneNight, ScenePines } from "./scenes";
 import { cx } from "@/lib/utils";
 
 export type SceneKey = "pines" | "golden" | "dusk" | "night" | "dawn";
@@ -60,6 +60,8 @@ const HEROES = {
   camp: { bg: "bg-gradient-to-b from-dusk-900 via-dusk-500 to-dusk-300", Scene: HeroCamp },
   hills: { bg: "bg-gradient-to-b from-sky-800 via-dusk-700 to-dusk-500", Scene: HeroHills },
   lake: { bg: "bg-gradient-to-b from-sky-800 via-sky-700 to-sky-400", Scene: HeroLake },
+  summit: { bg: "bg-gradient-to-b from-sky-800 via-dusk-500 to-dawn-300", Scene: HeroSummit },
+  cabin: { bg: "bg-gradient-to-b from-night-900 via-night-700 to-night-500", Scene: HeroCabin },
   trail: { bg: "bg-gradient-to-b from-night-700 via-night-500 to-sand-200", Scene: HeroTrail },
 };
 

@@ -40,6 +40,8 @@ export function ActionForm({
         onSubmit={(e) => {
           e.preventDefault();
           const fd = new FormData(e.currentTarget);
+          const submitter = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
+          if (submitter?.name) fd.set(submitter.name, submitter.value); // mis. intent=draft / submit / publish
           prepare?.(fd);
           startTransition(() => formAction(fd));
         }}
@@ -66,8 +68,12 @@ export function SubmitButton({
   variant = "primary",
   confirm,
   className,
+  name,
+  value,
 }: {
   children: React.ReactNode;
+  name?: string;
+  value?: string;
   pendingText?: string;
   variant?: "primary" | "danger" | "ghost";
   confirm?: string;
@@ -78,6 +84,8 @@ export function SubmitButton({
   return (
     <button
       type="submit"
+      name={name}
+      value={value}
       disabled={pending}
       className={cx(base, className)}
       onClick={(e) => {

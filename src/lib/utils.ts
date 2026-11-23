@@ -112,3 +112,9 @@ export function buildAngkatanOptions(existing: (string | null | undefined)[], ex
   const top = Math.min(ANGKATAN_MAX, max > 0 ? max + extra : fallbackTop);
   return Array.from({ length: top }, (_, i) => toRoman(top - i));
 }
+
+/** Perkiraan menit membaca (±200 kata/menit), minimal 1. */
+export function readingMinutes(text: string): number {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}

@@ -1,6 +1,6 @@
 import "server-only";
 import { createPublicClient } from "./supabase/public";
-import type { Album, Period, Photo, PositionWithMember, PublicMember, SiteSettings } from "./types";
+import type { Album, Alumnus, Period, Photo, Post, PostSummary, PositionWithMember, PublicMember, SiteSettings } from "./types";
 
 /** Query publik: bila database belum siap, tampilkan halaman kosong alih-alih error. */
 async function safe<T>(fn: () => PromiseLike<T>, fallback: T): Promise<T> {
@@ -153,4 +153,39 @@ export function getAngkatanValues() {
     const { data } = await createPublicClient().from("members").select("angkatan").not("angkatan", "is", null).limit(3000);
     return ((data ?? []) as { angkatan: string | null }[]).map((r) => r.angkatan);
   }, [] as (string | null)[]);
+}
+
+/** Alumni yang tampil publik beserta profil sukarela mereka. */
+export function getAlumni() {
+  return safe(async () => {
+    const { data } = await createPublicClient()
+      .from("members")
+      .select("id, full_name, nickname, angkatan, photo_url, profession, workplace, city, public_instagram, public_linkedin, public_whatsapp")
+      .eq("status", "alumni")
+      .order("full_name", { ascending: true })
+      .limit(3000);
+    return (data ?? []) as Alumnus[];
+  }, [] as Alumnus[]);
+}
+
+const POST_SUMMARY = "id, slug, kind, title, excerpt, cover_url, author_name, published_at";
+
+/** Tulisan yang sudah terbit (RLS), terbaru dulu. */
+export function getPublishedPosts(limit = 100) {
+  return safe(async () => {
+    const { data } = await createPublicClient()
+      .from("posts")
+      .select(POST_SUMMARY)
+      .eq("status", "published")
+      .order("published_at", { ascending: false })
+      .limit(limit);
+    return (data ?? []) as PostSummary[];
+  }, [] as PostSummary[]);
+}
+
+export function getPostBySlug(slug: string) {
+  return safe(async () => {
+    const { data } = await createPublicClient().from("posts").select("*").eq("slug", slug).eq("status", "published").maybeSingle();
+    return (data ?? null) as Post | null;
+  }, null as Post | null);
 }

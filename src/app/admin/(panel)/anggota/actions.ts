@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { done, fail, type FormState } from "@/lib/form-state";
 import { revalidatePublic } from "@/lib/revalidate";
-import { firstError, memberFieldsSchema, readFields } from "@/lib/validation";
+import { MEMBER_FIELD_KEYS, firstError, memberFieldsSchema, readFields } from "@/lib/validation";
 import { CSV_COLUMNS } from "@/lib/csv";
 import type { MemberStatus } from "@/lib/types";
 
@@ -31,7 +31,18 @@ export async function saveMember(_prev: FormState, fd: FormData): Promise<FormSt
   const extra = adminFields(fd);
   const id = String(fd.get("id") ?? "");
 
-  const publicCols = { full_name: f.full_name, nickname: nz(f.nickname), angkatan: nz(f.angkatan), ...extra };
+  const publicCols = {
+    full_name: f.full_name,
+    nickname: nz(f.nickname),
+    angkatan: nz(f.angkatan),
+    profession: nz(f.profession),
+    workplace: nz(f.workplace),
+    city: nz(f.city),
+    public_instagram: nz(f.public_instagram),
+    public_linkedin: nz(f.public_linkedin),
+    public_whatsapp: nz(f.public_whatsapp),
+    ...extra,
+  };
   const privateCols = {
     nim: nz(f.nim),
     email: nz(f.email),
@@ -116,6 +127,7 @@ export async function importMembers(_prev: FormState, fd: FormData): Promise<For
     const line = i + 2; // baris 1 adalah judul kolom
     const get = (col: string) => String(raw[col] ?? "").trim();
     const mapped: Record<string, string> = {};
+    for (const k of MEMBER_FIELD_KEYS) mapped[k] = ""; // kolom yang tak ada di CSV (mis. profil alumni) = kosong
     for (const [csvKey, key] of CSV_COLUMNS) mapped[key] = get(csvKey);
 
     const parsed = memberFieldsSchema.safeParse(mapped);

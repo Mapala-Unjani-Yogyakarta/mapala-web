@@ -57,6 +57,30 @@ export function MemberFields({ d = {}, angkatanOptions }: { d?: MemberDefaults; 
       <Field label="HP kontak darurat">
         <input name="emergency_phone" type="tel" maxLength={20} defaultValue={v("emergency_phone")} className={inputCls} />
       </Field>
+      <div className="mt-2 border-t border-line pt-6 sm:col-span-2">
+        <h3 className="font-display text-2xl text-ink">Profil alumni (opsional)</h3>
+        <p className="mt-1 text-sm text-muted">
+          Bagian ini <strong className="text-ink">tampil untuk umum</strong> di halaman Alumni bila statusmu alumni. Isi hanya yang ingin kamu tampilkan, dan kosongkan sisanya.
+        </p>
+      </div>
+      <Field label="Profesi" hint="Contoh: Dokter, Guru, Software Engineer">
+        <input name="profession" maxLength={120} defaultValue={v("profession")} className={inputCls} />
+      </Field>
+      <Field label="Tempat kerja / institusi">
+        <input name="workplace" maxLength={120} defaultValue={v("workplace")} className={inputCls} />
+      </Field>
+      <Field label="Kota domisili">
+        <input name="city" maxLength={80} defaultValue={v("city")} className={inputCls} />
+      </Field>
+      <Field label="Instagram" hint="Nama akun saja, mis. mapala_unjani">
+        <input name="public_instagram" maxLength={60} defaultValue={v("public_instagram")} className={inputCls} placeholder="tanpa @" />
+      </Field>
+      <Field label="LinkedIn" hint="Tempel tautan profilmu">
+        <input name="public_linkedin" maxLength={200} defaultValue={v("public_linkedin")} className={inputCls} placeholder="https://www.linkedin.com/in/…" />
+      </Field>
+      <Field label="WhatsApp (ditampilkan publik)" hint="Terpisah dari nomor HP pribadi di atas">
+        <input name="public_whatsapp" type="tel" maxLength={20} defaultValue={v("public_whatsapp")} className={inputCls} />
+      </Field>
     </div>
   );
 }

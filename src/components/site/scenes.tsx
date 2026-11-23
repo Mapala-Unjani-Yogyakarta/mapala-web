@@ -338,3 +338,91 @@ export function HeroTrail() {
     </>
   );
 }
+
+/** Hero "Alumni": puncak di atas lautan awan, dengan bendera dan seorang pendaki. */
+export function HeroSummit() {
+  const apexY = 820 - 400;
+  const puff = (cx: number, cy: number, rx: number, ry: number, o = 0.9) => <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill="#fff" opacity={o} />;
+  return (
+    <>
+      <Layer pos="top" depth={0.38} h="52%"><Stars seed={31} count={50} maxY={300} /></Layer>
+      {sunLayer(<Glow className="bottom-[10%] left-[15%] h-72 w-[55%]" color="255 190 150" opacity={0.7} />, 0.3)}
+      <Layer depth={0.3} h="60%">
+        <Art>
+          <circle cx="360" cy="720" r="56" fill="#ffe3c4" />
+          <path d={ridgePath([{ x: 360, h: 150, l: 260, r: 260 }, { x: 1500, h: 190, l: 280, r: 280 }], 840, 10, 61)} fill="#c78f9c" />
+        </Art>
+      </Layer>
+      <Layer depth={0.2} h="62%">
+        <Art>
+          <defs>
+            <linearGradient id="sm-peak" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#f2d9cf" />
+              <stop offset="1" stopColor="#7d6a94" />
+            </linearGradient>
+          </defs>
+          <path d={ridgePath([{ x: 1100, h: 400, l: 300, r: 330 }, { x: 560, h: 220, l: 220, r: 240 }], 840, 12, 65)} fill="url(#sm-peak)" />
+          {/* bendera & pendaki di puncak */}
+          <g>
+            <path d={`M1100 ${apexY} L1100 ${apexY - 62}`} stroke="#3b2f4a" strokeWidth="3" />
+            <path d={`M1100 ${apexY - 62} L1136 ${apexY - 52} L1100 ${apexY - 42}Z`} fill="#d9534f" />
+            <Hiker x={1068} y={apexY + 6} s={1.1} color="#3b2f4a" />
+          </g>
+        </Art>
+      </Layer>
+      <Layer depth={0.12} h="42%">
+        <Art>
+          {[[120, 850, 230, 46], [380, 870, 260, 40], [660, 855, 300, 50], [960, 872, 280, 44], [1240, 858, 300, 48], [1500, 868, 240, 42]].map(([cx, cy, rx, ry], i) => (
+            <g key={i}>{puff(cx, cy, rx, ry, 0.92)}</g>
+          ))}
+          {[[250, 880, 220, 36], [540, 892, 260, 34], [840, 884, 250, 38], [1120, 894, 270, 34], [1420, 886, 230, 36]].map(([cx, cy, rx, ry], i) => (
+            <g key={i}>{puff(cx, cy, rx, ry, 0.98)}</g>
+          ))}
+        </Art>
+      </Layer>
+    </>
+  );
+}
+
+/** Hero "Blog": pondok kayu bercahaya di hutan malam, asap tipis dari cerobong. */
+export function HeroCabin() {
+  return (
+    <>
+      <Layer pos="top" depth={0.38} h="55%"><Stars seed={41} count={80} maxY={340} /></Layer>
+      {sunLayer(<Glow className="right-[14%] top-[6%] h-72 w-72" color="215 232 255" opacity={0.35} />, 0.34)}
+      <Layer depth={0.28} h="60%">
+        <Art>
+          <circle cx="1220" cy="560" r="46" fill="#f4f1de" opacity="0.95" />
+          <path d={ridgePath([{ x: 300, h: 250, l: 320, r: 320 }, { x: 900, h: 300, l: 360, r: 360 }, { x: 1450, h: 240, l: 300, r: 300 }], 820, 12, 71)} fill="#16404a" />
+        </Art>
+      </Layer>
+      <Layer depth={0.2} h="50%">
+        <Art><path d={pines(72, 850, 120, 200, 40)} fill="#0f2f35" /></Art>
+      </Layer>
+      <Layer depth={0.1} h="44%">
+        <Art>
+          <defs>
+            <radialGradient id="cb-glow">
+              <stop offset="0" stopColor="#ffd27a" stopOpacity="0.85" />
+              <stop offset="1" stopColor="#ffb04d" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <path d={rolling(73, 872, 16, 380)} fill="#0b2227" />
+          {/* pondok */}
+          <circle cx="800" cy="800" r="150" fill="url(#cb-glow)" className="flicker" />
+          <rect x="705" y="780" width="190" height="94" fill="#1c1b24" />
+          <path d="M690 782 L800 712 L910 782Z" fill="#14131b" />
+          <rect x="852" y="728" width="20" height="40" fill="#14131b" />
+          <rect x="745" y="805" width="38" height="34" rx="2" fill="#ffd27a" />
+          <rect x="826" y="805" width="38" height="34" rx="2" fill="#ffc15e" />
+          <rect x="806" y="826" width="26" height="48" fill="#0e0d14" />
+          {/* asap */}
+          <ellipse cx="866" cy="710" rx="14" ry="9" fill="#cfe0e6" opacity="0.35" />
+          <ellipse cx="878" cy="684" rx="20" ry="11" fill="#cfe0e6" opacity="0.25" />
+          <ellipse cx="894" cy="654" rx="26" ry="13" fill="#cfe0e6" opacity="0.16" />
+          <path d={pines(74, 894, 200, 330, 1500, false)} fill="#08181c" transform="translate(-80 0)" />
+        </Art>
+      </Layer>
+    </>
+  );
+}

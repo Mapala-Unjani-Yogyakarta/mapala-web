@@ -92,7 +92,7 @@ export function MemberForm({
         <input type="checkbox" name="consent" required className="mt-0.5 h-4 w-4 accent-brand-700" />
         <span>
           Saya menyetujui data saya disimpan oleh pengurus. Hanya <strong>nama, nama lapangan, angkatan, dan foto</strong> yang dapat tampil
-          di website. NIM, kontak, golongan darah, dan alamat bersifat rahasia dan hanya dilihat pengurus.
+          di website. NIM, kontak pribadi, golongan darah, dan alamat bersifat rahasia dan hanya dilihat pengurus. Isian di bagian “Profil alumni” tampil publik.
         </span>
       </label>
 

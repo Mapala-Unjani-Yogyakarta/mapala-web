@@ -2,6 +2,7 @@
 -- Website Mapala — skema database (Tahap 1)
 -- Cara pakai: buka Supabase → SQL Editor → New query → tempel seluruh
 -- isi file ini → klik Run. Jalankan SATU KALI saja pada proyek baru.
+-- Setelah itu jalankan juga supabase/migrations/0002_alumni_blog.sql (alumni & blog).
 -- =====================================================================
 
 create extension if not exists pgcrypto;

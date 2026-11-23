@@ -17,7 +17,7 @@ export function ImageField({
   shape = "square",
 }: {
   name: string;
-  bucket: "site" | "members" | "gallery";
+  bucket: "site" | "members" | "gallery" | "blog";
   folder: string;
   defaultUrl?: string | null;
   maxDim?: number;
