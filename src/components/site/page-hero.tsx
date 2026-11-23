@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Ridge } from "./mountains";
+import { Ambient } from "./ambient";
 
 /** Kepala halaman versi ringan: langit lembut + siluet gunung + judul serif besar. */
 export function PageHero({
@@ -17,6 +18,7 @@ export function PageHero({
 }) {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-sky-300 via-sky-200 to-sky-100 pb-24 pt-32 sm:pt-40">
+      <Ambient kinds={["clouds", "birds"]} tint="255 255 255" bird="rgb(37 99 160 / 0.5)" />
       <Ridge seed={4} className="absolute inset-x-0 bottom-0 h-20 text-canvas sm:h-28" />
       <div className="container-page relative">
         {back && (

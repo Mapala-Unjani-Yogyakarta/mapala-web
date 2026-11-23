@@ -72,8 +72,21 @@ export function Hero({ orgName, tagline }: { orgName: string; tagline: string })
       {/* Cahaya matahari & awan tipis */}
       <div data-depth="0.7" className="absolute inset-0 will-change-transform">
         <div className="absolute left-1/2 top-[34%] h-[60%] w-[90%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(255_255_255/0.55),transparent)]" />
-        <div className="absolute left-[6%] top-[22%] h-24 w-72 rounded-full bg-[radial-gradient(closest-side,rgb(255_255_255/0.3),transparent)]" />
-        <div className="absolute right-[8%] top-[30%] h-28 w-80 rounded-full bg-[radial-gradient(closest-side,rgb(255_255_255/0.25),transparent)]" />
+        <div className="drift absolute left-[6%] top-[22%] h-24 w-72 rounded-full bg-[radial-gradient(closest-side,rgb(255_255_255/0.3),transparent)]" />
+        <div className="drift-slow absolute right-[8%] top-[30%] h-28 w-80 rounded-full bg-[radial-gradient(closest-side,rgb(255_255_255/0.25),transparent)]" />
+        <div className="drift-slow absolute left-[38%] top-[14%] h-16 w-56 rounded-full bg-[radial-gradient(closest-side,rgb(255_255_255/0.2),transparent)]" />
+        {/* Burung melintas */}
+        {[
+          { top: "17%", t: "46s", w: "2s", s: 1 },
+          { top: "24%", t: "58s", w: "14s", s: 0.7 },
+          { top: "12%", t: "52s", w: "30s", s: 0.55 },
+        ].map((b, i) => (
+          <span key={i} aria-hidden className="bird absolute left-0" style={{ top: b.top, ["--t" as string]: b.t, ["--w" as string]: b.w }}>
+            <svg width={26 * b.s} height={10 * b.s} viewBox="0 0 26 10" fill="none" stroke="rgb(255 255 255 / 0.75)" strokeWidth="1.6" strokeLinecap="round">
+              <path d="M1 8 Q7 0 13 7 Q19 0 25 8" />
+            </svg>
+          </span>
+        ))}
       </div>
 
       <div data-depth="0.55" data-zoom="0.04" className={layer}>

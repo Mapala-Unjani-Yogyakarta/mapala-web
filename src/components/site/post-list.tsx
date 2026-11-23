@@ -34,8 +34,8 @@ export function PostList({ posts }: { posts: PostSummary[] }) {
         <EmptyState>Belum ada tulisan di kategori ini.</EmptyState>
       ) : (
         <ul className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-          {shown.map((p) => (
-            <li key={p.id}>
+          {shown.map((p, i) => (
+            <li key={p.id} style={{ "--i": i } as React.CSSProperties} className="pop-in">
               <PostCard post={p} />
             </li>
           ))}

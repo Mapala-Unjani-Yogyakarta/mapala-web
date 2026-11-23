@@ -146,7 +146,11 @@ body {
   @apply rounded-panel border border-line bg-surface shadow-card;
 }
 @utility card-link {
-  @apply rounded-card border border-line bg-surface shadow-card transition-colors hover:border-brand-400;
+  @apply rounded-card border border-line bg-surface shadow-card transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:border-brand-400 hover:shadow-float;
+}
+/* Kartu yang terangkat halus saat disorot (tanpa tautan) */
+@utility lift {
+  @apply transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-brand-400 hover:shadow-float;
 }
 /* Kaca buram: navbar & tombol di atas gambar */
 @utility glass {
@@ -215,6 +219,128 @@ body {
   .scroll-hint {
     animation: none;
   }
+}
+
+
+/* ───────────── Gerak & transisi ─────────────
+   Semua gerak otomatis mati bila pengguna memilih "kurangi gerakan",
+   dan konten tetap terlihat penuh bila JavaScript nonaktif. */
+
+/* Muncul saat digulir ke layar (komponen <Reveal>) */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-reveal] {
+    transition: opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms), transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms);
+  }
+  [data-reveal]:not([data-in]) {
+    opacity: 0;
+    transform: translate3d(var(--rx, 0), var(--ry, 26px), 0) scale(var(--rs, 1));
+  }
+  [data-reveal="fade"]:not([data-in]) { --ry: 0px; }
+  [data-reveal="left"]:not([data-in]) { --rx: -32px; --ry: 0px; }
+  [data-reveal="right"]:not([data-in]) { --rx: 32px; --ry: 0px; }
+  [data-reveal="scale"]:not([data-in]) { --ry: 12px; --rs: 0.94; }
+}
+
+/* Transisi antarhalaman */
+@keyframes page-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.page-in { animation: page-in 0.45s ease-out both; }
+
+/* Muncul berurutan (daftar yang berubah karena filter): atur --i pada tiap item */
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+.pop-in { animation: pop-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(min(var(--i, 0), 12) * 45ms); }
+
+/* Menu seluler membuka dari atas */
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-10px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+.menu-in { animation: menu-in 0.25s cubic-bezier(0.2, 0.7, 0.2, 1) both; transform-origin: top center; }
+
+/* Awan melayang & burung terbang di hero */
+@keyframes drift {
+  from { transform: translateX(-6vw); }
+  to { transform: translateX(6vw); }
+}
+.drift { animation: drift 28s ease-in-out infinite alternate; }
+.drift-slow { animation: drift 42s ease-in-out infinite alternate-reverse; }
+@keyframes fly {
+  from { transform: translate3d(-12vw, 0, 0); }
+  to { transform: translate3d(112vw, -6vh, 0); }
+}
+@keyframes flap {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.35); }
+}
+.bird { animation: fly var(--t, 38s) linear var(--w, 0s) infinite; will-change: transform; }
+.bird > svg { animation: flap 0.7s ease-in-out infinite; transform-origin: center; }
+
+
+/* Suasana adegan: kunang-kunang, debu emas, bintang jatuh, sinar */
+@keyframes firefly {
+  0%, 100% { opacity: 0; transform: translate(0, 0); }
+  20%, 70% { opacity: 0.95; }
+  50% { transform: translate(var(--dx, 30px), var(--dy, -30px)); }
+}
+.firefly { animation: firefly var(--dur, 8s) ease-in-out infinite; }
+@keyframes mote {
+  0% { opacity: 0; transform: translate(0, 0); }
+  15%, 75% { opacity: 0.8; }
+  100% { opacity: 0; transform: translate(var(--dx, 30px), calc(var(--rise, 220px) * -1)); }
+}
+.mote { animation: mote var(--dur, 14s) linear infinite; }
+@keyframes shoot {
+  0%, 88% { opacity: 0; transform: translate(0, 0) rotate(28deg); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-260px, 150px) rotate(28deg); }
+}
+.shoot { animation: shoot 14s ease-in infinite; animation-delay: var(--w, 0s); transform: rotate(28deg); }
+@keyframes rays {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+.rays { animation: rays 9s ease-in-out infinite; mask-image: linear-gradient(to bottom, black, transparent 85%); -webkit-mask-image: linear-gradient(to bottom, black, transparent 85%); }
+
+/* Garis aksen yang "digambar" */
+@keyframes draw-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Dialog: masuk dengan skala halus, latar memudar */
+dialog[open] { animation: dialog-in 0.28s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+dialog[open]::backdrop { animation: fade-in 0.28s ease-out both; }
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Tombol menekan saat diklik, garis bawah tautan tumbuh */
+.press { transition: transform 0.15s ease; }
+.press:active { transform: scale(0.96); }
+.link-grow {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 0.3s ease;
+}
+.link-grow:hover, .link-grow:focus-visible { background-size: 100% 1px; }
+
+/* Pesan hasil form muncul dengan lembut */
+[role="status"], [role="alert"] { animation: pop-in 0.35s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-in, .pop-in, .menu-in, .drift, .drift-slow, .bird, .bird > svg, .firefly, .mote, .shoot, .rays, dialog[open], dialog[open]::backdrop, [role="status"], [role="alert"] {
+    animation: none !important;
+  }
+  .press:active { transform: none; }
 }
 
 /* Isi tulisan (hasil render Markdown) */

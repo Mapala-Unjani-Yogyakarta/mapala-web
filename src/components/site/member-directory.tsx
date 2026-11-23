@@ -130,10 +130,10 @@ export function MemberDirectory({
               </p>
             </div>
             <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-              {items.map((m) => {
+              {items.map((m, i) => {
                 const role = roles[m.id];
                 return (
-                  <li key={m.id} className="card overflow-hidden">
+                  <li key={m.id} style={{ "--i": i } as React.CSSProperties} className="card lift pop-in overflow-hidden">
                     <div className="relative aspect-square bg-gradient-to-br from-brand-100 to-sky-100">
                       {m.photo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element

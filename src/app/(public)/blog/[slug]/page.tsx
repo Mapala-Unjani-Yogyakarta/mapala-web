@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getPostBySlug, getPublishedPosts } from "@/lib/data";
 import { Badge } from "@/components/ui";
 import { Markdown } from "@/components/markdown";
+import { ScrollProgress } from "@/components/site/motion";
 import { PageHero } from "@/components/site/page-hero";
 import { PostCard } from "@/components/site/post-card";
 import { formatDate, readingMinutes } from "@/lib/utils";
@@ -30,6 +31,7 @@ export default async function PostPage({ params }: Props) {
 
   return (
     <article>
+      <ScrollProgress />
       <PageHero eyebrow={post.kind === "berita" ? "Berita" : "Blog"} title={post.title} back={{ href: "/blog", label: "Semua tulisan" }}>
         <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-sky-800/85">
           <Badge tone={post.kind === "berita" ? "accent" : "brand"}>{post.kind === "berita" ? "Berita" : "Blog"}</Badge>

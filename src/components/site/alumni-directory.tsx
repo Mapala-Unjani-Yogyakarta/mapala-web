@@ -103,7 +103,7 @@ export function AlumniDirectory({ alumni, posts }: { alumni: Alumnus[]; posts: R
               disabled={n === 0 && !active}
               onClick={() => pickOpen(key)}
               className={cx(
-                "card flex items-center gap-3 p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+                "card press flex items-center gap-3 p-4 text-left transition-[border-color,background-color,transform,box-shadow] duration-300 enabled:hover:-translate-y-0.5 enabled:hover:shadow-float disabled:cursor-not-allowed disabled:opacity-50",
                 active ? "!border-brand-600 bg-brand-50" : "hover:border-brand-500",
               )}
             >
@@ -192,10 +192,10 @@ export function AlumniDirectory({ alumni, posts }: { alumni: Alumnus[]; posts: R
               <span className="text-sm text-muted">{items.length} alumni</span>
             </div>
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {items.map((a) => {
+              {items.map((a, i) => {
                 const tulisan = posts[a.id] ?? [];
                 return (
-                  <li key={a.id} className="card flex flex-col gap-2.5 p-4">
+                  <li key={a.id} style={{ "--i": i } as React.CSSProperties} className="card lift pop-in flex flex-col gap-2.5 p-4">
                     <div className="flex items-center gap-3">
                       <Avatar src={a.photo_url} name={a.full_name} size={48} />
                       <div className="min-w-0">

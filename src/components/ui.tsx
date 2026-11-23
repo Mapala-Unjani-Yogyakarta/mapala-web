@@ -2,6 +2,7 @@
  * Komponen dasar UI. Semua warna/bentuk berasal dari token di
  * src/app/globals.css — jangan menulis warna mentah (mis. gray-500) di sini.
  */
+import { Reveal } from "@/components/site/motion";
 import Link from "next/link";
 import { cx } from "@/lib/utils";
 
@@ -10,7 +11,7 @@ export const inputCls =
   "block w-full rounded-control border border-line-strong bg-surface px-3 py-2 text-sm text-ink placeholder:text-faint focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200 disabled:bg-sunken";
 
 export const btnBase =
-  "inline-flex items-center justify-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-60";
+  "press inline-flex items-center justify-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition-[background-color,color,transform,box-shadow] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-60";
 export const btnPrimary = cx(btnBase, "bg-brand-700 text-white hover:bg-brand-800");
 export const btnGhost = cx(btnBase, "border border-line-strong bg-surface text-ink hover:bg-sunken");
 export const btnDanger = cx(btnBase, "border border-danger-200 bg-surface text-danger-700 hover:bg-danger-50");
@@ -119,7 +120,7 @@ export function SectionHeading({
 }) {
   const light = tone === "light";
   return (
-    <div className="mb-10 flex items-end justify-between gap-4">
+    <Reveal className="mb-10 flex items-end justify-between gap-4">
       <div>
         {eyebrow && <p className={cx("eyebrow mb-2", light && "!text-white/70")}>{eyebrow}</p>}
         <h2 className={cx("section-title", light && "!text-white")}>{title}</h2>
@@ -129,7 +130,7 @@ export function SectionHeading({
           {hrefLabel ?? "Lihat semua"} →
         </Link>
       )}
-    </div>
+    </Reveal>
   );
 }
 

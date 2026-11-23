@@ -3,6 +3,7 @@ import { Ridge } from "./mountains";
 import { Parallax } from "./parallax";
 import { HeroCabin, HeroCamp, HeroHills, HeroLake, HeroSummit, HeroTrail, PineSeam, SceneDawn, SceneDusk, SceneGolden, SceneNight, ScenePines } from "./scenes";
 import { cx } from "@/lib/utils";
+import { Ambient, type AmbientKind } from "./ambient";
 
 export type SceneKey = "pines" | "golden" | "dusk" | "night" | "dawn";
 
@@ -11,6 +12,15 @@ export type SceneKey = "pines" | "golden" | "dusk" | "night" | "dawn";
  * Pembatas bawah berwarna SAMA dengan warna atas bagian berikutnya,
  * sehingga bagian berikutnya tampak "naik" sebagai tanah/bukit di depan adegan ini.
  */
+type AmbientCfg = { kinds: AmbientKind[]; tint?: string; accent?: string; bird?: string };
+const SCENE_AMBIENT: Record<SceneKey, AmbientCfg> = {
+  pines: { kinds: ["clouds", "mist", "birds"], tint: "255 255 255", bird: "rgb(31 51 120 / 0.45)" },
+  golden: { kinds: ["motes", "birds"], accent: "#f3c365", bird: "rgb(120 78 20 / 0.5)" },
+  dusk: { kinds: ["fireflies", "clouds"], tint: "255 190 200", accent: "#ffe08a" },
+  night: { kinds: ["shooting", "fireflies"], accent: "#cfe6ff" },
+  dawn: { kinds: ["rays", "clouds", "birds"], tint: "255 232 190", bird: "rgb(120 78 60 / 0.5)" },
+};
+
 const SCENES: Record<SceneKey, { bg: string; Scene: () => React.JSX.Element; top: string; seam: "ridge" | "pines" }> = {
   pines: { bg: "bg-gradient-to-b from-canvas via-mist-100 to-mist-200", Scene: ScenePines, top: "text-canvas", seam: "ridge" },
   golden: { bg: "bg-gradient-to-b from-sand-100 to-sand-200", Scene: SceneGolden, top: "text-sand-100", seam: "ridge" },
@@ -42,6 +52,7 @@ export function SceneSection({
       scene={
         <>
           <cfg.Scene />
+          <Ambient {...SCENE_AMBIENT[scene]} />
           {seamColor &&
             (cfg.seam === "pines" ? (
               <PineSeam className={cx("absolute inset-x-0 -bottom-px block h-28 w-full sm:h-40", seamColor)} />
@@ -63,6 +74,15 @@ const HEROES = {
   summit: { bg: "bg-gradient-to-b from-sky-800 via-dusk-500 to-dawn-300", Scene: HeroSummit },
   cabin: { bg: "bg-gradient-to-b from-night-900 via-night-700 to-night-500", Scene: HeroCabin },
   trail: { bg: "bg-gradient-to-b from-night-700 via-night-500 to-sand-200", Scene: HeroTrail },
+};
+
+const HERO_AMBIENT: Record<keyof typeof HEROES, AmbientCfg> = {
+  camp: { kinds: ["fireflies", "shooting"], accent: "#ffd98a" },
+  hills: { kinds: ["clouds", "birds"], tint: "255 214 220" },
+  lake: { kinds: ["clouds", "mist", "birds"] },
+  trail: { kinds: ["mist", "motes"], tint: "255 240 210", accent: "#ffe3a0" },
+  summit: { kinds: ["rays", "clouds", "birds"], tint: "255 236 200" },
+  cabin: { kinds: ["fireflies", "shooting"], accent: "#cfe6ff" },
 };
 
 /** Hero halaman dengan ilustrasi sendiri: judul putih besar di atas adegan paralaks. */
@@ -90,6 +110,7 @@ export function SceneHero({
       scene={
         <>
           <cfg.Scene />
+          <Ambient {...HERO_AMBIENT[scene]} />
           <Ridge seed={6} className="absolute inset-x-0 -bottom-px block h-12 w-full text-canvas sm:h-20" />
         </>
       }

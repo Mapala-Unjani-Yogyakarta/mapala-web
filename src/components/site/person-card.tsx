@@ -17,7 +17,7 @@ export function PersonCard({
   size?: number;
 }) {
   return (
-    <div className="card flex items-center gap-4 p-4">
+    <div className="card lift flex items-center gap-4 p-4">
       <Avatar src={photo} name={name} size={size} />
       <div className="min-w-0">
         <p className="truncate font-medium text-ink">{name}</p>

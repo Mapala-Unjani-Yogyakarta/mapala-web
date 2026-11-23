@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getAlbums } from "@/lib/data";
 import { EmptyState } from "@/components/ui";
 import { AlbumCard } from "@/components/site/album-card";
+import { Reveal } from "@/components/site/motion";
 import { SceneHero } from "@/components/site/scene-section";
 
 export const metadata: Metadata = { title: "Gallery Kegiatan" };
@@ -16,10 +17,10 @@ export default async function GalleryPage() {
           <EmptyState>Belum ada album yang dipublikasikan.</EmptyState>
         ) : (
           <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {albums.map((a) => (
-              <li key={a.id}>
+            {albums.map((a, i) => (
+              <Reveal as="li" key={a.id} delay={(i % 3) * 100}>
                 <AlbumCard album={a} />
-              </li>
+              </Reveal>
             ))}
           </ul>
         )}
