@@ -34,6 +34,12 @@ export type Member = {
   public_whatsapp?: string | null;
   bidang?: string | null;
   open_to?: string[] | null;
+  bio?: string | null;
+  skills?: string[] | null;
+  grad_year?: number | null;
+  website?: string | null;
+  spotlight_quote?: string | null;
+  spotlight_at?: string | null;
 };
 
 /** Data anggota yang boleh tampil publik. */
@@ -100,7 +106,7 @@ export type Submission = {
   reviewed_at: string | null;
 };
 
-export type Alumnus = Pick<Member, "id" | "full_name" | "nickname" | "angkatan" | "photo_url" | "profession" | "workplace" | "city" | "public_instagram" | "public_linkedin" | "public_whatsapp" | "bidang" | "open_to">;
+export type Alumnus = Pick<Member, "id" | "full_name" | "nickname" | "angkatan" | "photo_url" | "profession" | "workplace" | "city" | "public_instagram" | "public_linkedin" | "public_whatsapp" | "bidang" | "open_to" | "bio" | "skills" | "grad_year" | "website" | "spotlight_quote" | "spotlight_at">;
 
 export type PostKind = "blog" | "berita";
 export type PostStatus = "draft" | "submitted" | "published" | "rejected";

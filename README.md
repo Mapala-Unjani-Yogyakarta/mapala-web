@@ -132,6 +132,14 @@ Bagian situs publik ada di `src/components/site/`: `hero`, `mountains`, `scenes`
 - **Minta dikenalkan**: kontak alumni TIDAK dibuka. Permintaan masuk ke Panel → **Permintaan Kenalan** (hanya terbaca pengurus, dilindungi captcha, jebakan bot, dan batas kiriman). Pengurus menanyakan kesediaan alumni lalu menyambungkan keduanya, dan menandai status (baru / diteruskan / selesai).
 - **Migrasi `0003` wajib dijalankan sebelum deploy**: Supabase → SQL Editor → tempel [`supabase/migrations/0003_alumni_network_angkatan.sql`](supabase/migrations/0003_alumni_network_angkatan.sql) → Run (setelah `0002`). Tanpa itu halaman Alumni kosong dan penyimpanan anggota di panel gagal.
 
+## Jaringan alumni (profil kaya, sorotan, gabung)
+
+- **Profil alumni** (semua opsional, tampil publik): bio ≤280 karakter, keahlian (maks. 8, dipisah koma), tahun lulus, situs (selalu `https://`), selain bidang/profesi/kota/"terbuka untuk".
+- Halaman **/alumni**: kartu pintu masuk berdasarkan kebutuhan (mentor, peluang kerja & magang, dukung kegiatan), ringkasan kota yang bisa diklik, pencarian yang juga mencakup keahlian & bio, dan label keahlian yang bisa diklik untuk mencari.
+- **Sorotan alumni**: pengurus mencentang "Sorotan alumni" (+ kutipan ≤240 karakter) di profil anggota. Maksimal 3, hanya berstatus Alumni; dilepas otomatis bila status berubah.
+- **/alumni/gabung**: formulir publik khusus alumni (tanpa data pribadi; email wajib untuk pengurus). Masuk antrean Verifikasi dengan label "Mendaftar sebagai Alumni"; saat disetujui, statusnya otomatis Alumni.
+- **Migrasi `0004` wajib dijalankan sebelum deploy**: Supabase → SQL Editor → tempel [`supabase/migrations/0004_alumni_enrichment.sql`](supabase/migrations/0004_alumni_enrichment.sql) → Run (setelah `0003`). Tanpa itu halaman Alumni kosong dan penyimpanan anggota gagal.
+
 ## Aturan pengisian angkatan
 
 Angkatan adalah **nomor urut** (bukan tahun masuk) dan selalu disimpan sebagai angka Romawi (XV = angkatan ke-15).

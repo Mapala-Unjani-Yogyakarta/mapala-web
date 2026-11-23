@@ -52,6 +52,68 @@ const whatsapp = z
     return d;
   });
 
+/** Keahlian: "SAR, GIS; P3K" → ["SAR","GIS","P3K"] (maks. 8 label, tiap label maks. 30 karakter). */
+const skills = z
+  .string()
+  .transform((v, ctx) => {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const raw of v.split(/[,;\n]/)) {
+      const t = raw.trim().replace(/\s+/g, " ");
+      if (!t || seen.has(t.toLowerCase())) continue;
+      if (t.length > 30) {
+        ctx.addIssue({ code: "custom", message: `Keahlian "${t.slice(0, 20)}…" terlalu panjang (maksimal 30 karakter per keahlian)` });
+        return z.NEVER;
+      }
+      seen.add(t.toLowerCase());
+      out.push(t);
+    }
+    if (out.length > 8) {
+      ctx.addIssue({ code: "custom", message: "Keahlian maksimal 8, pisahkan dengan koma" });
+      return z.NEVER;
+    }
+    return out;
+  });
+
+/** Tahun lulus: kosong → null, selain itu 1950–2100. */
+const gradYear = z
+  .string()
+  .trim()
+  .transform((v, ctx) => {
+    if (!v) return null;
+    const n = Number(v);
+    if (!/^\d{4}$/.test(v) || n < 1950 || n > 2100) {
+      ctx.addIssue({ code: "custom", message: "Tahun lulus tidak valid, isi 4 angka, mis. 2018" });
+      return z.NEVER;
+    }
+    return n;
+  });
+
+/** Situs / portofolio: selalu disimpan sebagai https://… ; skema selain http(s) ditolak. */
+const website = z
+  .string()
+  .trim()
+  .transform((v, ctx) => {
+    if (!v) return "";
+    const withScheme = /^[a-z][a-z0-9+.-]*:/i.test(v) ? v : `https://${v}`;
+    let u: URL;
+    try {
+      u = new URL(withScheme);
+    } catch {
+      u = new URL("https://invalid");
+    }
+    if ((u.protocol !== "https:" && u.protocol !== "http:") || !u.hostname.includes(".") || u.username || u.password) {
+      ctx.addIssue({ code: "custom", message: "Situs: tempel alamat lengkap, mis. https://namamu.id" });
+      return z.NEVER;
+    }
+    const out = `https://${u.host}${u.pathname === "/" ? "" : u.pathname}${u.search}`;
+    if (out.length > 200) {
+      ctx.addIssue({ code: "custom", message: "Alamat situs terlalu panjang (maksimal 200 karakter)" });
+      return z.NEVER;
+    }
+    return out;
+  });
+
 const optionalText = (max: number) => z.string().trim().max(max, `Maksimal ${max} karakter`);
 
 export const memberFieldsSchema = z.object({
@@ -86,6 +148,10 @@ export const memberFieldsSchema = z.object({
   public_whatsapp: whatsapp,
   bidang: z.enum(["", ...BIDANG], { message: "Bidang tidak valid" }),
   open_to: z.array(z.enum(OPEN_TO_KEYS)).default([]),
+  bio: optionalText(280),
+  skills,
+  grad_year: gradYear,
+  website,
 });
 
 export type MemberFields = z.infer<typeof memberFieldsSchema>;
@@ -129,4 +195,8 @@ export const FIELD_LABELS: Record<string, string> = {
   public_whatsapp: "WhatsApp (publik)",
   bidang: "Bidang",
   open_to: "Terbuka untuk",
+  bio: "Bio singkat",
+  skills: "Keahlian",
+  grad_year: "Tahun lulus",
+  website: "Situs / portofolio",
 };

@@ -23,6 +23,9 @@ function adminFields(fd: FormData) {
   };
 }
 
+/** Pesan galat dari aturan database (mis. batas sorotan) sudah berbahasa Indonesia: tampilkan apa adanya. */
+const friendly = (m: string) => m.match(/Maksimal 3 alumni sorotan[^"]*|Hanya alumni yang bisa disorot/)?.[0] ?? m;
+
 export async function saveMember(_prev: FormState, fd: FormData): Promise<FormState> {
   const { supabase } = await requireAdmin();
   const parsed = memberFieldsSchema.safeParse(readFields(fd));
@@ -30,6 +33,21 @@ export async function saveMember(_prev: FormState, fd: FormData): Promise<FormSt
   const f = parsed.data;
   const extra = adminFields(fd);
   const id = String(fd.get("id") ?? "");
+
+  // Sorotan alumni (hanya pengurus): maksimal 3, hanya berstatus alumni
+  const wantSpotlight = fd.get("spotlight") === "on";
+  const quote = nz(String(fd.get("spotlight_quote") ?? ""));
+  if (wantSpotlight && extra.status !== "alumni") return fail("Hanya anggota berstatus Alumni yang bisa disorot. Ubah status menjadi Alumni terlebih dahulu.");
+  if (quote && quote.length > 240) return fail("Kutipan sorotan maksimal 240 karakter.");
+  let spotlight: { spotlight_at: string | null; spotlight_quote: string | null } = { spotlight_at: null, spotlight_quote: null };
+  if (wantSpotlight) {
+    let existingAt: string | null = null;
+    if (id) {
+      const { data: cur } = await supabase.from("members").select("spotlight_at").eq("id", id).maybeSingle();
+      existingAt = (cur as { spotlight_at: string | null } | null)?.spotlight_at ?? null;
+    }
+    spotlight = { spotlight_at: existingAt ?? new Date().toISOString(), spotlight_quote: quote };
+  }
 
   const publicCols = {
     full_name: f.full_name,
@@ -43,7 +61,12 @@ export async function saveMember(_prev: FormState, fd: FormData): Promise<FormSt
     public_whatsapp: nz(f.public_whatsapp),
     bidang: nz(f.bidang),
     open_to: f.open_to,
+    bio: nz(f.bio),
+    skills: f.skills,
+    grad_year: f.grad_year,
+    website: nz(f.website),
     ...extra,
+    ...spotlight,
   };
   const privateCols = {
     nim: nz(f.nim),
@@ -57,7 +80,7 @@ export async function saveMember(_prev: FormState, fd: FormData): Promise<FormSt
 
   if (id) {
     const { error } = await supabase.from("members").update(publicCols).eq("id", id);
-    if (error) return fail("Gagal menyimpan: " + error.message);
+    if (error) return fail("Gagal menyimpan: " + friendly(error.message));
     const { error: e2 } = await supabase.from("member_private").upsert({ member_id: id, ...privateCols }, { onConflict: "member_id" });
     if (e2) return fail("Gagal menyimpan data privat: " + e2.message);
     revalidatePublic();
@@ -65,7 +88,7 @@ export async function saveMember(_prev: FormState, fd: FormData): Promise<FormSt
   }
 
   const { data, error } = await supabase.from("members").insert(publicCols).select("id").single();
-  if (error || !data) return fail("Gagal menambah anggota: " + (error?.message ?? ""));
+  if (error || !data) return fail("Gagal menambah anggota: " + friendly(error?.message ?? ""));
   const { error: e2 } = await supabase.from("member_private").insert({ member_id: data.id, ...privateCols });
   if (e2) return fail("Gagal menyimpan data privat: " + e2.message);
   revalidatePublic();

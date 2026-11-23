@@ -1,17 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useDeferredValue, useMemo, useState } from "react";
-import { Briefcase, MapPin, PenLine } from "lucide-react";
+import { useDeferredValue, useMemo, useRef, useState } from "react";
+import { Briefcase, GraduationCap, Globe, HeartHandshake, MapPin, PenLine, Rocket, UserRoundSearch } from "lucide-react";
 import { Avatar, Badge, EmptyState } from "@/components/ui";
 import { BIDANG, OPEN_TO, openToLabel } from "@/lib/profile-options";
-import { angkatanValue } from "@/lib/utils";
+import { angkatanValue, cx } from "@/lib/utils";
 import type { Alumnus, AlumnusPost } from "@/lib/types";
 import { FilterBar, FilterSelect } from "./filter-bar";
 import { IntroDialog } from "./intro-dialog";
 
 const NO_BIDANG = "Belum memilih bidang";
 const linkCls = "rounded-full border border-line-strong px-3 py-1 text-xs font-medium text-body transition-colors hover:border-brand-500 hover:text-brand-700";
+
+const ENTRIES = [
+  { key: "mentor", title: "Cari mentor", desc: "Alumni yang bersedia membimbing", Icon: UserRoundSearch },
+  { key: "rekrutmen", title: "Peluang kerja & magang", desc: "Alumni yang bisa membuka jalan", Icon: Rocket },
+  { key: "dukungan", title: "Dukung kegiatan", desc: "Alumni yang siap mendukung organisasi", Icon: HeartHandshake },
+] as const;
 
 const cityKey = (c: string | null | undefined) => (c ?? "").trim().toLowerCase();
 
@@ -24,6 +30,17 @@ export function AlumniDirectory({ alumni, posts }: { alumni: Alumnus[]; posts: R
   const [angkatan, setAngkatan] = useState("semua");
   const [target, setTarget] = useState<Alumnus | null>(null);
   const query = useDeferredValue(q.trim().toLowerCase());
+  const listRef = useRef<HTMLDivElement>(null);
+  const jump = () => window.setTimeout(() => listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+  const pickOpen = (k: string) => {
+    setOpen((cur) => (cur === k ? "semua" : k));
+    jump();
+  };
+  const pickCity = (k: string) => {
+    setCity((cur) => (cur === k ? "semua" : k));
+    jump();
+  };
+  const openCounts = useMemo(() => Object.fromEntries(ENTRIES.map((e) => [e.key, alumni.filter((a) => (a.open_to ?? []).includes(e.key)).length])), [alumni]);
 
   const cities = useMemo(() => {
     const m = new Map<string, { label: string; n: number }>();
@@ -55,7 +72,7 @@ export function AlumniDirectory({ alumni, posts }: { alumni: Alumnus[]; posts: R
       if (angkatan !== "semua" && (a.angkatan?.trim() ?? "") !== angkatan) return false;
       if (open !== "semua" && !(a.open_to ?? []).includes(open)) return false;
       if (!query) return true;
-      return [a.full_name, a.nickname, a.profession, a.workplace, a.city, a.bidang].filter(Boolean).join(" ").toLowerCase().includes(query);
+      return [a.full_name, a.nickname, a.profession, a.workplace, a.city, a.bidang, a.bio, ...(a.skills ?? [])].filter(Boolean).join(" ").toLowerCase().includes(query);
     });
     const map = new Map<string, Alumnus[]>();
     for (const a of filtered) map.set(a.bidang || NO_BIDANG, [...(map.get(a.bidang || NO_BIDANG) ?? []), a]);
@@ -74,10 +91,60 @@ export function AlumniDirectory({ alumni, posts }: { alumni: Alumnus[]; posts: R
 
   return (
     <div>
+      <div className="grid gap-3 sm:grid-cols-3" role="group" aria-label="Cari alumni berdasarkan kebutuhan">
+        {ENTRIES.map(({ key, title, desc, Icon }) => {
+          const n = openCounts[key] ?? 0;
+          const active = open === key;
+          return (
+            <button
+              key={key}
+              type="button"
+              aria-pressed={active}
+              disabled={n === 0 && !active}
+              onClick={() => pickOpen(key)}
+              className={cx(
+                "card flex items-center gap-3 p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+                active ? "!border-brand-600 bg-brand-50" : "hover:border-brand-500",
+              )}
+            >
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-700">
+                <Icon size={20} aria-hidden />
+              </span>
+              <span className="min-w-0">
+                <span className="block font-medium text-ink">
+                  {title} <span className="text-brand-700">({n})</span>
+                </span>
+                <span className="block text-xs text-muted">{desc}</span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {cities.length > 0 && (
+        <p className="mt-4 flex flex-wrap items-center gap-x-1 gap-y-1.5 text-sm text-muted" aria-label="Ringkasan kota">
+          <span className="mr-1">Alumni di:</span>
+          {cities.slice(0, 6).map(([k, c], i) => (
+            <span key={k} className="inline-flex items-center">
+              {i > 0 && <span aria-hidden className="mr-1 text-faint">·</span>}
+              <button
+                type="button"
+                aria-pressed={city === k}
+                onClick={() => pickCity(k)}
+                className={cx("rounded-full px-2 py-0.5 transition-colors hover:text-brand-700", city === k ? "bg-brand-100 font-medium text-brand-800" : "text-body")}
+              >
+                {c.label} ({c.n})
+              </button>
+            </span>
+          ))}
+        </p>
+      )}
+
+      <div ref={listRef} className="mt-5 scroll-mt-24" />
       <FilterBar
         q={q}
         onQ={setQ}
-        placeholder="Cari nama, profesi, atau kota"
+        placeholder="Cari nama, keahlian, profesi, atau kota"
         activeCount={activeCount}
         onReset={reset}
         summary={`${groups.total} dari ${alumni.length} alumni`}
@@ -139,6 +206,7 @@ export function AlumniDirectory({ alumni, posts }: { alumni: Alumnus[]; posts: R
                         </p>
                       </div>
                     </div>
+                    {a.bio && <p className="text-sm leading-relaxed text-body">{a.bio}</p>}
                     {(a.profession || a.workplace) && (
                       <p className="flex items-start gap-2 text-sm text-body">
                         <Briefcase size={15} aria-hidden className="mt-0.5 shrink-0 text-brand-600" />
@@ -150,6 +218,30 @@ export function AlumniDirectory({ alumni, posts }: { alumni: Alumnus[]; posts: R
                         <MapPin size={15} aria-hidden className="shrink-0 text-brand-600" />
                         {a.city}
                       </p>
+                    )}
+                    {a.grad_year && (
+                      <p className="flex items-center gap-2 text-sm text-body">
+                        <GraduationCap size={15} aria-hidden className="shrink-0 text-brand-600" />
+                        Lulus {a.grad_year}
+                      </p>
+                    )}
+                    {(a.skills ?? []).length > 0 && (
+                      <div className="flex flex-wrap gap-1.5" aria-label="Keahlian">
+                        {(a.skills ?? []).map((sk) => (
+                          <button
+                            key={sk}
+                            type="button"
+                            onClick={() => {
+                              setQ(sk);
+                              jump();
+                            }}
+                            title={`Cari alumni dengan keahlian ${sk}`}
+                            className="rounded-full bg-sunken px-2.5 py-0.5 text-xs text-body transition-colors hover:bg-brand-100 hover:text-brand-800"
+                          >
+                            {sk}
+                          </button>
+                        ))}
+                      </div>
                     )}
                     {(a.open_to ?? []).length > 0 && (
                       <div className="flex flex-wrap gap-1.5" aria-label="Terbuka untuk">
@@ -177,6 +269,11 @@ export function AlumniDirectory({ alumni, posts }: { alumni: Alumnus[]; posts: R
                       <button type="button" onClick={() => setTarget(a)} className="rounded-full bg-brand-700 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-brand-800">
                         Minta dikenalkan
                       </button>
+                      {a.website && (
+                        <a href={a.website} target="_blank" rel="noopener noreferrer nofollow" className={cx(linkCls, "inline-flex items-center gap-1")}>
+                          <Globe size={12} aria-hidden /> Situs
+                        </a>
+                      )}
                       {a.public_instagram && <a href={`https://instagram.com/${a.public_instagram}`} target="_blank" rel="noopener noreferrer" className={linkCls}>Instagram</a>}
                       {a.public_linkedin && <a href={a.public_linkedin} target="_blank" rel="noopener noreferrer" className={linkCls}>LinkedIn</a>}
                       {a.public_whatsapp && <a href={`https://wa.me/${a.public_whatsapp}`} target="_blank" rel="noopener noreferrer" className={linkCls}>WhatsApp</a>}

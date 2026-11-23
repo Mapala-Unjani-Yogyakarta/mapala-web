@@ -53,6 +53,7 @@ export default async function VerificationPage() {
                   <Avatar src={s.photo_url ?? (now?.photo_url as string | null | undefined)} name={str(s.payload.full_name) || "?"} size={48} />
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold">{str(s.payload.full_name)}</p>
+                    {s.payload.status_hint === "alumni" && <Badge tone="brand">Mendaftar sebagai Alumni</Badge>}
                     <p className="text-xs text-muted">Dikirim {formatDate(s.submitted_at)}</p>
                   </div>
                   <Badge tone={s.kind === "baru" ? "brand" : "warn"}>{s.kind === "baru" ? "Anggota baru" : "Perubahan data"}</Badge>

@@ -17,6 +17,9 @@ export function MemberForm({
   currentPhoto,
   angkatanOptions,
   defaultOpenTo,
+  mode = "full",
+  submitLabel,
+  consentText,
 }: {
   action: (prev: FormState, fd: FormData) => Promise<FormState>;
   defaults?: MemberDefaults;
@@ -24,6 +27,9 @@ export function MemberForm({
   currentPhoto?: string | null;
   angkatanOptions?: string[];
   defaultOpenTo?: string[];
+  mode?: "full" | "alumni";
+  submitLabel?: string;
+  consentText?: React.ReactNode;
 }) {
   const photoRef = useRef<Blob | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -60,11 +66,11 @@ export function MemberForm({
       <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
         <label>
           Website
-          <input name="website" tabIndex={-1} autoComplete="off" />
+          <input name="hp_url" tabIndex={-1} autoComplete="off" />
         </label>
       </div>
 
-      <MemberFields d={defaults} angkatanOptions={angkatanOptions} openTo={defaultOpenTo} />
+      <MemberFields d={defaults} angkatanOptions={angkatanOptions} openTo={defaultOpenTo} mode={mode} />
 
       <Field label="Foto" hint="Foto wajah/setengah badan. Otomatis dikecilkan sebelum dikirim.">
         <div className="flex items-center gap-4">
@@ -87,8 +93,12 @@ export function MemberForm({
       <label className="flex items-start gap-3 rounded-control bg-brand-50 p-4 text-sm text-body">
         <input type="checkbox" name="consent" required className="mt-0.5 h-4 w-4 accent-brand-700" />
         <span>
-          Saya menyetujui data saya disimpan oleh pengurus. Hanya <strong>nama, nama lapangan, angkatan, dan foto</strong> yang dapat tampil
-          di website. NIM, kontak pribadi, golongan darah, dan alamat bersifat rahasia dan hanya dilihat pengurus. Isian di bagian “Profil alumni” tampil publik.
+          {consentText ?? (
+            <>
+              Saya menyetujui data saya disimpan oleh pengurus. Hanya <strong>nama, nama lapangan, angkatan, dan foto</strong> yang dapat tampil
+              di website. NIM, kontak pribadi, golongan darah, dan alamat bersifat rahasia dan hanya dilihat pengurus. Isian di bagian “Profil alumni” tampil publik.
+            </>
+          )}
         </span>
       </label>
 
@@ -99,7 +109,7 @@ export function MemberForm({
         </>
       )}
 
-      <SubmitButton pendingText="Mengirim…">{token ? "Kirim perubahan data" : "Kirim data"}</SubmitButton>
+      <SubmitButton pendingText="Mengirim…">{submitLabel ?? (token ? "Kirim perubahan data" : "Kirim data")}</SubmitButton>
     </ActionForm>
   );
 }

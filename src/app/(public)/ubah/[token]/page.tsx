@@ -22,7 +22,12 @@ export default async function UbahDataPage({ params }: { params: Promise<{ token
     if (priv) {
       const { data: member } = await db.from("members").select("*").eq("id", priv.member_id).maybeSingle();
       if (member) {
-        defaults = { ...priv, ...member };
+        defaults = {
+          ...priv,
+          ...member,
+          skills: ((member.skills as string[] | null) ?? []).join(", "),
+          grad_year: member.grad_year ? String(member.grad_year) : "",
+        };
         photo = member.photo_url;
         openTo = (member.open_to as string[] | null) ?? [];
       }

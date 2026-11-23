@@ -32,6 +32,17 @@ export function MemberAdminForm({ defaults, id, angkatanOptions, openTo }: { def
             ))}
           </select>
         </Field>
+        <div className="rounded-control border border-line bg-sunken/50 p-4 sm:col-span-2">
+          <label className="flex items-start gap-3 text-sm">
+            <input type="checkbox" name="spotlight" defaultChecked={!!d.spotlight_at} className="mt-0.5 h-4 w-4 accent-brand-700" />
+            <span>
+              <strong>Sorotan alumni</strong> — tampilkan besar di bagian atas halaman Alumni (maksimal 3 orang, hanya berstatus Alumni).
+            </span>
+          </label>
+          <Field label="Kutipan atau cerita singkat" hint="Opsional, maksimal 240 karakter. Tampil di bawah nama pada sorotan." className="mt-3">
+            <textarea name="spotlight_quote" rows={2} maxLength={240} defaultValue={d.spotlight_quote ?? ""} className={inputCls} />
+          </Field>
+        </div>
         <label className="flex items-start gap-3 text-sm sm:col-span-2">
           <input type="checkbox" name="is_public" defaultChecked={d.is_public === undefined ? true : d.is_public === "true"} className="mt-0.5 h-4 w-4 accent-brand-700" />
           <span>

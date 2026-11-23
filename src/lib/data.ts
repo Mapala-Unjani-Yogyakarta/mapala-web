@@ -160,7 +160,7 @@ export function getAlumni() {
   return safe(async () => {
     const { data } = await createPublicClient()
       .from("members")
-      .select("id, full_name, nickname, angkatan, photo_url, profession, workplace, city, public_instagram, public_linkedin, public_whatsapp, bidang, open_to")
+      .select("id, full_name, nickname, angkatan, photo_url, profession, workplace, city, public_instagram, public_linkedin, public_whatsapp, bidang, open_to, bio, skills, grad_year, website, spotlight_quote, spotlight_at")
       .eq("status", "alumni")
       .order("full_name", { ascending: true })
       .limit(3000);

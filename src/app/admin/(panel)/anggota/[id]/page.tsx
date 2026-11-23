@@ -24,7 +24,14 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
   if (!member) notFound();
 
   const link = priv?.edit_token ? `${siteUrl()}/ubah/${priv.edit_token}` : null;
-  const defaults = { ...(priv ?? {}), ...member, is_public: String(member.is_public) };
+  const defaults = {
+    ...(priv ?? {}),
+    ...member,
+    is_public: String(member.is_public),
+    skills: ((member.skills as string[] | null) ?? []).join(", "),
+    grad_year: member.grad_year ? String(member.grad_year) : "",
+    spotlight_at: member.spotlight_at ?? "",
+  };
   const jabatan = ((history ?? []) as unknown as { id: string; title: string; division: string | null; periods: { name: string; year_start: number } | null }[]).sort((a, b) => (b.periods?.year_start ?? 0) - (a.periods?.year_start ?? 0));
 
   return (

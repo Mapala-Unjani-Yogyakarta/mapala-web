@@ -5,7 +5,19 @@ import { BIDANG, OPEN_TO } from "@/lib/profile-options";
 export type MemberDefaults = Partial<Record<string, string | null>>;
 
 /** Kolom isian anggota yang dipakai bersama oleh formulir publik dan panel admin. */
-export function MemberFields({ d = {}, angkatanOptions, openTo = [] }: { d?: MemberDefaults; angkatanOptions?: string[]; openTo?: string[] }) {
+export function MemberFields({
+  d = {},
+  angkatanOptions,
+  openTo = [],
+  mode = "full",
+}: {
+  d?: MemberDefaults;
+  angkatanOptions?: string[];
+  openTo?: string[];
+  /** "alumni" = hanya identitas dasar + profil publik (+ email wajib untuk pengurus), tanpa data pribadi */
+  mode?: "full" | "alumni";
+}) {
+  const alumniOnly = mode === "alumni";
   const v = (k: string) => d[k] ?? "";
   const options = angkatanOptions ?? buildAngkatanOptions([]);
   const currentAngkatan = v("angkatan");
@@ -30,11 +42,17 @@ export function MemberFields({ d = {}, angkatanOptions, openTo = [] }: { d?: Mem
           ))}
         </select>
       </Field>
+      <Field
+        label="Email"
+        required={alumniOnly}
+        hint={alumniOnly ? "Hanya dilihat pengurus (tidak tampil di website). Dipakai untuk menghubungi dan memverifikasi kamu." : undefined}
+      >
+        <input name="email" type="email" required={alumniOnly} maxLength={120} defaultValue={v("email")} className={inputCls} autoComplete="email" />
+      </Field>
+      {!alumniOnly && (
+        <>
       <Field label="NIM">
         <input name="nim" maxLength={30} defaultValue={v("nim")} className={inputCls} inputMode="numeric" />
-      </Field>
-      <Field label="Email">
-        <input name="email" type="email" maxLength={120} defaultValue={v("email")} className={inputCls} autoComplete="email" />
       </Field>
       <Field label="No. HP / WhatsApp">
         <input name="phone" type="tel" maxLength={20} defaultValue={v("phone")} className={inputCls} autoComplete="tel" />
@@ -58,8 +76,10 @@ export function MemberFields({ d = {}, angkatanOptions, openTo = [] }: { d?: Mem
       <Field label="HP kontak darurat">
         <input name="emergency_phone" type="tel" maxLength={20} defaultValue={v("emergency_phone")} className={inputCls} />
       </Field>
+        </>
+      )}
       <div className="mt-2 border-t border-line pt-6 sm:col-span-2">
-        <h3 className="font-display text-2xl text-ink">Profil alumni (opsional)</h3>
+        <h3 className="font-display text-2xl text-ink">{alumniOnly ? "Profil di jaringan alumni" : "Profil alumni (opsional)"}</h3>
         <p className="mt-1 text-sm text-muted">
           Bagian ini <strong className="text-ink">tampil untuk umum</strong> di halaman Alumni bila statusmu alumni. Isi hanya yang ingin kamu tampilkan, dan kosongkan sisanya.
         </p>
@@ -106,6 +126,18 @@ export function MemberFields({ d = {}, angkatanOptions, openTo = [] }: { d?: Mem
       </Field>
       <Field label="WhatsApp (ditampilkan publik)" hint="Terpisah dari nomor HP pribadi di atas">
         <input name="public_whatsapp" type="tel" maxLength={20} defaultValue={v("public_whatsapp")} className={inputCls} />
+      </Field>
+      <Field label="Tahun lulus" hint="Opsional, 4 angka">
+        <input name="grad_year" inputMode="numeric" maxLength={4} defaultValue={v("grad_year")} className={inputCls} placeholder="mis. 2018" />
+      </Field>
+      <Field label="Situs / portofolio" hint="Opsional, alamat lengkap">
+        <input name="website" type="text" inputMode="url" maxLength={200} defaultValue={v("website")} className={inputCls} placeholder="https://namamu.id" autoComplete="off" />
+      </Field>
+      <Field label="Keahlian" hint="Pisahkan dengan koma, maksimal 8. Contoh: SAR, GIS, Fotografi" className="sm:col-span-2">
+        <input name="skills" maxLength={300} defaultValue={v("skills")} className={inputCls} placeholder="SAR, GIS, Fotografi" />
+      </Field>
+      <Field label="Bio singkat" hint="Maksimal 280 karakter. Ceritakan apa yang kamu kerjakan atau bisa bantu." className="sm:col-span-2">
+        <textarea name="bio" rows={3} maxLength={280} defaultValue={v("bio")} className={inputCls} />
       </Field>
     </div>
   );

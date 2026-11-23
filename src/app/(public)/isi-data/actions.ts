@@ -10,7 +10,7 @@ const MAX_PENDING_PER_HOUR = 60;
 /** Menerima data anggota dari formulir publik. Semua masuk antrean verifikasi, tidak langsung tayang. */
 export async function submitMemberForm(_prev: FormState, fd: FormData): Promise<FormState> {
   // Jebakan bot: bila kolom tersembunyi terisi, pura-pura sukses.
-  if (String(fd.get("website") ?? "") !== "") return done("Terima kasih! Data kamu sudah terkirim.");
+  if (String(fd.get("hp_url") ?? "") !== "") return done("Terima kasih! Data kamu sudah terkirim.");
 
   const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
   if (turnstileSecret) {
