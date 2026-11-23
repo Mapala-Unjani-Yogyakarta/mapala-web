@@ -1,36 +1,132 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Website Mapala
 
-## Getting Started
+Website organisasi Mapala: landing page, arsip anggota, periode kepengurusan, dan gallery kegiatan, dengan panel admin untuk pengurus.
 
-First, run the development server:
+**Teknologi:** Next.js (TypeScript) · Tailwind CSS · Supabase (database, login pengurus, penyimpanan foto).
+
+## Fitur Tahap 1
+
+| Bagian | Isi |
+|---|---|
+| Publik | Beranda, Pengurus, Arsip Periode, Gallery (album + pratinjau foto) |
+| Anggota (tanpa login) | Formulir isi data `/isi-data`, ubah data lewat tautan pribadi `/ubah/…` |
+| Panel admin `/admin` | Dashboard, Verifikasi, Anggota (cari, filter, impor/ekspor CSV), Periode & Pengurus, Gallery, Konten Website, Akun Pengurus |
+
+Semua data dari anggota **masuk antrean verifikasi** dulu. Data sensitif (NIM, HP, golongan darah, alamat, kontak darurat) disimpan terpisah dan hanya bisa dilihat pengurus yang login.
+
+---
+
+## Cara menjalankan
+
+### 1. Pasang Node.js
+Unduh versi LTS dari <https://nodejs.org>, lalu di folder proyek ini jalankan:
+
+```bash
+npm install
+```
+
+### 2. Buat proyek Supabase (gratis)
+1. Daftar di <https://supabase.com>. **Pakai email organisasi/bersama**, bukan email pribadi, supaya tidak terkunci saat pengurus berganti.
+2. Klik **New project**, beri nama (mis. `mapala-web`), pilih region **Southeast Asia (Singapore)**, dan simpan *database password*.
+3. Buka **SQL Editor → New query**, tempel seluruh isi [`supabase/schema.sql`](supabase/schema.sql), lalu klik **Run**. (Cukup sekali.)
+4. Buka **Authentication → Sign In / Providers**, matikan **Allow new users to sign up**. Akun pengurus dibuat dari panel admin, bukan pendaftaran bebas.
+
+### 3. Buat akun super admin pertama
+1. Di Supabase buka **Authentication → Users → Add user → Create new user**. Isi email dan kata sandi, centang **Auto Confirm User**.
+2. Buka **SQL Editor**, jalankan (ganti nama dan email):
+
+```sql
+insert into public.admins (user_id, full_name, email, role)
+select id, 'Nama Kamu', email, 'super_admin'
+from auth.users where email = 'email-yang-tadi@contoh.com';
+```
+
+### 4. Isi pengaturan
+Salin `.env.example` menjadi `.env.local`, lalu isi dari **Project Settings → API** di Supabase:
+
+| Variabel | Diambil dari |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `anon` / publishable key |
+| `SUPABASE_SERVICE_ROLE_KEY` | `service_role` / secret key (**rahasia**) |
+| `NEXT_PUBLIC_SITE_URL` | Alamat website (di komputer: `http://localhost:3000`) |
+
+### 5. Jalankan di komputer
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka <http://localhost:3000>. Login pengurus di <http://localhost:3000/admin>.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 6. Pasang di internet (Vercel, gratis)
+1. Unggah proyek ke GitHub (sebaiknya ke *organization* milik organisasi).
+2. Di <https://vercel.com> pilih **Add New → Project**, impor repositorinya.
+3. Isi **Environment Variables** yang sama seperti `.env.local`, dengan `NEXT_PUBLIC_SITE_URL` berisi alamat website sebenarnya.
+4. Klik **Deploy**. Domain sendiri bisa dipasang di **Settings → Domains**.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Mengganti tampilan (tema)
 
-To learn more about Next.js, take a look at the following resources:
+Gaya: hero gunung berlapis di beranda dengan langit biru → hijau, navbar pil kaca, dan judul serif tipis. Halaman lain memakai kepala halaman ringan (langit lembut + siluet gunung).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Seluruh warna, bentuk, dan font terpusat di **satu file: [`src/app/globals.css`](src/app/globals.css)**. Komponen tidak memakai warna mentah, hanya nama bermakna.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Ingin mengubah | Ubah |
+|---|---|
+| Warna hijau merek | `--color-brand-50 … 900` di `globals.css` |
+| Warna langit (hero & kepala halaman) | `--color-sky-100 … 800` |
+| Latar halaman, kartu, garis | `--color-canvas`, `--color-surface`, `--color-sunken`, `--color-line` |
+| Warna teks | `--color-ink`, `--color-body`, `--color-muted`, `--color-faint` |
+| Sudut membulat & bayangan | `--radius-*`, `--shadow-*` |
+| Font | `--font-sans`, `--font-display` + impor font di `src/app/layout.tsx` |
+| Gaya judul, kartu, kaca | blok `@utility` di `globals.css` (`page-title`, `card`, `glass`, …) |
+| **Warna & bentuk gunung (hero beranda)** | objek `LAYERS` di `src/components/site/mountains.tsx` |
+| **Adegan tiap bagian beranda & hero halaman** | `src/components/site/scenes.tsx` (warna ada di atribut `fill`); gradasi latar & urutan di `scene-section.tsx` |
+| Warna waktu (senja, malam, fajar…) | `--color-dusk-*`, `--color-night-*`, `--color-dawn-*`, `--color-sand-*`, `--color-mist-*` |
+| Kecepatan paralaks, posisi nama | atribut `data-depth` / `top-[..%]` di `src/components/site/hero.tsx` |
 
-## Deploy on Vercel
+Beranda berisi enam adegan berurutan mengikuti waktu (hero siang → pagi berkabut → siang keemasan → senja → malam → fajar). Pembatas antarbagian berwarna sama dengan warna awal bagian berikutnya sehingga transisinya menyatu; bagian yang kosong otomatis dilewati. Halaman Pengurus, Periode, dan Gallery punya hero ilustrasi sendiri (`SceneHero`).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Bagian situs publik ada di `src/components/site/`: `hero`, `mountains`, `scenes`, `scene-kit`, `scene-section`, `parallax`, `site-header` (navbar), `site-footer`, `page-hero`, `stats`, `album-card`, `person-card`. Pola dasar (tombol, input, label status) ada di `src/components/ui.tsx`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Aksesibilitas & performa:** animasi hero mati otomatis bila pengguna memilih "kurangi gerakan" di perangkatnya. Gunung dibuat dari SVG (tanpa gambar), jadi ringan dan tajam di semua layar. Untuk mengganti dengan foto sendiri, ganti isi `MountainLayer` pada `hero.tsx` dengan elemen `<img>` bertingkat.
+
+**Aturan agar tetap rapi:** jangan menulis warna bawaan Tailwind (`gray-500`, `green-600`, dll.) atau kode warna `#xxxxxx` di komponen. Pakai token di atas.
+
+## Alur kerja sehari-hari
+
+- **Anggota baru:** bagikan tautan `…/isi-data`. Data masuk ke **Verifikasi**, pengurus klik *Setujui*.
+- **Anggota lama ingin ubah data:** buka profilnya di **Anggota**, buat **tautan pribadi**, kirim lewat WhatsApp. Perubahan juga masuk **Verifikasi**.
+- **Periode baru:** **Periode & Pengurus → Buat periode**, lalu tambahkan pengurusnya.
+- **Gallery:** **Gallery → Buat album → Unggah foto** (boleh banyak sekaligus).
+- **Impor anggota lama:** **Anggota → Impor**, unduh templat CSV, isi, lalu unggah.
+
+## Catatan penting
+
+- **Supabase gratis menjeda proyek** yang tidak aktif selama 1 minggu. Agar tidak mati, ada pengunjung yang membuka website tiap minggu, atau pasang pengecek gratis (mis. cron-job.org) yang membuka halaman beranda tiap 2–3 hari.
+- **Penyimpanan foto gratis 1 GB.** Foto otomatis dikecilkan di browser; sekitar 3.000 foto muat.
+- **Captcha opsional:** bila formulir publik kena spam, aktifkan Cloudflare Turnstile (gratis) dan isi dua variabel `TURNSTILE_*` di `.env.local`/Vercel.
+- **Serah terima kepengurusan:** pastikan minimal dua orang menjadi *Owner* di Supabase, Vercel, GitHub, dan registrar domain.
+- Tautan pribadi anggota bersifat rahasia. Bila bocor, buat ulang atau cabut dari profil anggota.
+
+## Struktur proyek
+
+```
+src/app/(public)/      halaman publik + formulir anggota
+src/app/admin/         login + panel admin (halaman dan server action)
+src/components/        komponen UI, formulir, unggah foto
+src/components/site/   header, footer, hero, kartu situs publik
+src/app/globals.css    TEMA: warna, bentuk, font, pola komponen
+src/lib/               klien Supabase, validasi, akses data, util
+supabase/schema.sql    skema database + aturan keamanan (RLS) + bucket foto
+```
+
+## Perintah
+
+```bash
+npm run dev     # jalankan mode pengembangan
+npm run build   # build produksi
+npm run lint    # cek kode
+```

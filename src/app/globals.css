@@ -1,26 +1,197 @@
 @import "tailwindcss";
 
+/*
+ * =====================================================================
+ *  TEMA WEBSITE — SATU-SATUNYA TEMPAT UNTUK MENGUBAH GAYA
+ * =====================================================================
+ *  Seluruh komponen memakai NAMA BERMAKNA (brand, sky, canvas, ink…),
+ *  bukan nama warna. Ubah nilai di sini dan seluruh situs ikut berubah.
+ *
+ *  Warna & bentuk : blok @theme di bawah
+ *  Font           : src/app/layout.tsx (next/font) + --font-* di bawah
+ *  Pola komponen  : @utility di bagian bawah + src/components/ui.tsx
+ *  Hero gunung    : src/components/site/mountains.tsx & hero.tsx
+ */
+@theme {
+  /* ── Latar & permukaan ─────────────────────────────── */
+  --color-canvas: #f5f3ea;        /* latar halaman (krem hangat) */
+  --color-surface: #fdfcf8;       /* kartu, input, panel */
+  --color-sunken: #ecebe0;        /* area cekung: hover, zebra */
+  --color-line: #dfe0d3;          /* garis tipis */
+  --color-line-strong: #c9ccbc;   /* garis input / tombol */
+  --color-cream: #f8f5e8;         /* tombol krem di atas gambar */
+
+  /* ── Teks ──────────────────────────────────────────── */
+  --color-ink: #1c2b21;           /* judul, penekanan */
+  --color-body: #34463a;          /* isi paragraf */
+  --color-muted: #627066;         /* keterangan */
+  --color-faint: #929d93;         /* placeholder, petunjuk */
+
+  /* ── Warna merek: hijau hutan ──────────────────────── */
+  --color-brand-50: #eef4ee;
+  --color-brand-100: #dbe8dc;
+  --color-brand-200: #bcd4bf;
+  --color-brand-300: #94b79a;
+  --color-brand-400: #6c9876;
+  --color-brand-500: #4c7a58;
+  --color-brand-600: #3a6246;
+  --color-brand-700: #2e4e38;
+  --color-brand-800: #263629;
+  --color-brand-900: #1a261d;
+
+  /* ── Langit: biru ──────────────────────────────────── */
+  --color-sky-100: #e4eefc;
+  --color-sky-200: #c7dbf8;
+  --color-sky-300: #9dbcf0;
+  --color-sky-400: #7099e6;
+  --color-sky-500: #4a77d8;
+  --color-sky-600: #3459bd;
+  --color-sky-700: #2a469b;
+  --color-sky-800: #1f3378;
+
+  /* ── Warna adegan: waktu sepanjang hari ────────────── */
+  --color-mist-100: #e7eedd;      /* pagi berkabut */
+  --color-mist-200: #d5e2ca;
+  --color-sand-100: #f4ebd3;      /* siang keemasan */
+  --color-sand-200: #efd9a8;
+  --color-dusk-900: #1c2556;      /* senja */
+  --color-dusk-700: #3b3a82;
+  --color-dusk-500: #7c5b94;
+  --color-dusk-300: #e89d6d;
+  --color-night-900: #0e1d29;     /* malam */
+  --color-night-700: #173543;
+  --color-night-500: #25555c;
+  --color-dawn-100: #f8dcc8;      /* fajar */
+  --color-dawn-300: #eebb9d;
+
+  /* ── Aksen hangat: tanah liat / pasir ──────────────── */
+  --color-accent-50: #f8f1e8;
+  --color-accent-100: #f0e2cf;
+  --color-accent-500: #a8693a;
+  --color-accent-600: #8c5530;
+
+  /* ── Status ────────────────────────────────────────── */
+  --color-danger-50: #fbf0ee;
+  --color-danger-100: #f6dcd7;
+  --color-danger-200: #ecc0b8;
+  --color-danger-700: #a5382a;
+  --color-warn-50: #faf4e3;
+  --color-warn-100: #f3e8c3;
+  --color-warn-200: #e6d391;
+  --color-warn-800: #7a5a12;
+
+  /* ── Bentuk ────────────────────────────────────────── */
+  --radius-control: 0.75rem;      /* input, foto kecil */
+  --radius-card: 1.25rem;         /* kartu */
+  --radius-panel: 1.75rem;        /* panel besar */
+  --shadow-card: none;            /* datar */
+  --shadow-float: 0 12px 32px -10px rgb(31 51 120 / 0.28); /* menu & dialog */
+
+  /* ── Font ──────────────────────────────────────────── */
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-instrument), ui-serif, Georgia, serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-canvas);
+  color: var(--color-body);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--color-sky-200);
+}
+
+/* Cloudflare Turnstile: beri jarak */
+.cf-turnstile {
+  margin-top: 0.5rem;
+}
+
+/*
+ * ── Pola komponen yang dipakai berulang ─────────────────────────────
+ */
+@utility container-page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 72rem;
+  padding-inline: 1rem;
+  @variant sm {
+    padding-inline: 1.5rem;
+  }
+}
+@utility page-title {
+  @apply font-display text-5xl leading-none tracking-tight text-ink sm:text-6xl;
+}
+@utility section-title {
+  @apply font-display text-4xl leading-tight tracking-tight text-ink sm:text-5xl;
+}
+@utility eyebrow {
+  @apply text-xs font-medium uppercase tracking-[0.18em] text-muted;
+}
+@utility card {
+  @apply rounded-card border border-line bg-surface shadow-card;
+}
+@utility panel {
+  @apply rounded-panel border border-line bg-surface shadow-card;
+}
+@utility card-link {
+  @apply rounded-card border border-line bg-surface shadow-card transition-colors hover:border-brand-400;
+}
+/* Kaca buram: navbar & tombol di atas gambar */
+@utility glass {
+  background: rgb(255 255 255 / 0.16);
+  border: 1px solid rgb(255 255 255 / 0.38);
+  backdrop-filter: blur(18px) saturate(1.5);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+}
+@utility glass-light {
+  background: rgb(253 252 248 / 0.72);
+  border: 1px solid rgb(31 51 120 / 0.12);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+}
+
+/* Animasi masuk hero */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes scroll-hint {
+  0%, 100% { transform: scaleY(0.4); transform-origin: top; opacity: 0.5; }
+  50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: var(--o, 0.8); }
+  50% { opacity: 0.25; }
+}
+@keyframes flicker {
+  0%, 100% { opacity: 0.95; transform: scale(1); }
+  40% { opacity: 0.75; transform: scale(0.94); }
+  70% { opacity: 1; transform: scale(1.05); }
+}
+.twinkle { animation: twinkle 3.6s ease-in-out infinite; }
+.flicker { animation: flicker 2.4s ease-in-out infinite; transform-origin: center; }
+.rise {
+  animation: rise 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.scroll-hint {
+  animation: scroll-hint 2.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .twinkle,
+  .flicker,
+  .scroll-hint {
+    animation: none;
+  }
 }
