@@ -158,7 +158,7 @@ export function MountainLayer({ kind, className }: { kind: LayerKey; className?:
           <path d={ridgePath(L.peaks, L.base, L.jag, L.seed)} />
         </clipPath>
       </defs>
-      <g style={L.paint ? { filter: "url(#mp-paint)" } : undefined}>
+      <g className={L.paint ? "paint-filter" : undefined}>
         <path d={ridgePath(L.peaks, L.base, L.jag, L.seed)} fill={`url(#${id}-fill)`} />
         <g clipPath={`url(#${id}-clip)`}>
           <path d={f.light} fill={L.light} opacity={0.38} />
@@ -176,7 +176,7 @@ export function PaintFilter() {
       <filter id="mp-paint" x="-2%" y="-2%" width="104%" height="104%" colorInterpolationFilters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency="0.011 0.02" numOctaves="2" seed="4" result="warp" />
         <feDisplacementMap in="SourceGraphic" in2="warp" scale="22" xChannelSelector="R" yChannelSelector="G" result="shape" />
-        <feTurbulence type="fractalNoise" baseFrequency="0.035 0.06" numOctaves="3" seed="11" result="grain" />
+        <feTurbulence type="fractalNoise" baseFrequency="0.035 0.06" numOctaves="2" seed="11" result="grain" />
         <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0.86  0 0 0 0 0.9  0 0 0 0 0.5  0 0 0 3 -1.5" result="patches" />
         <feComposite in="patches" in2="shape" operator="in" result="patchesIn" />
         <feComponentTransfer in="patchesIn" result="patchesSoft">

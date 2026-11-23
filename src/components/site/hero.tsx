@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { MountainLayer, PaintFilter } from "./mountains";
+import { BrandMark } from "./brand-mark";
 
 /** Ukuran tulisan menyesuaikan panjang nama agar tidak meluap. */
 function wordmarkSize(name: string) {
@@ -28,9 +29,14 @@ export function Hero({ orgName, tagline }: { orgName: string; tagline: string })
     const layers = [...el.querySelectorAll<HTMLElement>("[data-depth]")];
     let raf = 0;
 
+    let h = el.offsetHeight;
+    const measure = () => {
+      h = el.offsetHeight;
+      onScroll();
+    };
     const update = () => {
       raf = 0;
-      const h = el.offsetHeight;
+      if (window.scrollY > h * 1.1) return; // hero sudah lewat: tidak perlu menghitung
       const p = Math.min(Math.max(window.scrollY / h, 0), 1);
       for (const l of layers) {
         const depth = parseFloat(l.dataset.depth ?? "0");
@@ -45,8 +51,10 @@ export function Hero({ orgName, tagline }: { orgName: string; tagline: string })
     };
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", measure);
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", measure);
       if (raf) cancelAnimationFrame(raf);
     };
   }, []);
@@ -63,9 +71,9 @@ export function Hero({ orgName, tagline }: { orgName: string; tagline: string })
 
       {/* Cahaya matahari & awan tipis */}
       <div data-depth="0.7" className="absolute inset-0 will-change-transform">
-        <div className="absolute left-1/2 top-[34%] h-[60%] w-[90%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(255_255_255/0.55),transparent)] blur-2xl" />
-        <div className="absolute left-[6%] top-[22%] h-24 w-72 rounded-full bg-white/25 blur-3xl" />
-        <div className="absolute right-[8%] top-[30%] h-28 w-80 rounded-full bg-white/20 blur-3xl" />
+        <div className="absolute left-1/2 top-[34%] h-[60%] w-[90%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(255_255_255/0.55),transparent)]" />
+        <div className="absolute left-[6%] top-[22%] h-24 w-72 rounded-full bg-[radial-gradient(closest-side,rgb(255_255_255/0.3),transparent)]" />
+        <div className="absolute right-[8%] top-[30%] h-28 w-80 rounded-full bg-[radial-gradient(closest-side,rgb(255_255_255/0.25),transparent)]" />
       </div>
 
       <div data-depth="0.55" data-zoom="0.04" className={layer}>
@@ -80,6 +88,9 @@ export function Hero({ orgName, tagline }: { orgName: string; tagline: string })
 
       {/* Nama organisasi: di antara puncak utama dan bukit depan */}
       <div data-depth="0.34" data-fade="2.4" className="absolute inset-x-0 top-[31%] z-20 px-4 text-center will-change-transform sm:top-[29%]">
+        <div className="rise mb-4 flex justify-center" style={{ animationDelay: "0.1s" }}>
+          <BrandMark size={68} className="shadow-[0_6px_24px_rgba(16,24,50,0.35)] ring-2 ring-white/60" priority />
+        </div>
         <p className="rise text-sm tracking-wide text-white/90 sm:text-base" style={{ animationDelay: "0.2s" }}>
           {tagline}
         </p>

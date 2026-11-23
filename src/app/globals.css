@@ -106,6 +106,13 @@ body {
   background: var(--color-sky-200);
 }
 
+/* Efek "lukisan" gunung: filter SVG mahal, jadi hanya di layar lebar */
+@media (min-width: 1024px) {
+  .paint-filter {
+    filter: url(#mp-paint);
+  }
+}
+
 /* Cloudflare Turnstile: beri jarak */
 .cf-turnstile {
   margin-top: 0.5rem;
@@ -143,16 +150,22 @@ body {
 }
 /* Kaca buram: navbar & tombol di atas gambar */
 @utility glass {
-  background: rgb(255 255 255 / 0.16);
-  border: 1px solid rgb(255 255 255 / 0.38);
-  backdrop-filter: blur(18px) saturate(1.5);
-  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  background: rgb(255 255 255 / 0.2);
+  border: 1px solid rgb(255 255 255 / 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 @utility glass-light {
-  background: rgb(253 252 248 / 0.72);
+  background: rgb(253 252 248 / 0.94);
   border: 1px solid rgb(31 51 120 / 0.12);
-  backdrop-filter: blur(18px) saturate(1.4);
-  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+}
+
+/* Kerangka loading: blok abu berkilau */
+@utility skeleton {
+  background: linear-gradient(100deg, var(--color-sunken) 30%, var(--color-surface) 50%, var(--color-sunken) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+  border-radius: var(--radius-control);
 }
 
 /* Animasi masuk hero */
@@ -181,6 +194,13 @@ body {
 }
 .twinkle { animation: twinkle 3.6s ease-in-out infinite; }
 .flicker { animation: flicker 2.4s ease-in-out infinite; transform-origin: center; }
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
 .rise {
   animation: rise 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
@@ -188,6 +208,7 @@ body {
   animation: scroll-hint 2.2s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
+  .skeleton,
   .rise,
   .twinkle,
   .flicker,

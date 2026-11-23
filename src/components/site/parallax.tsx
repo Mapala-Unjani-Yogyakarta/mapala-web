@@ -34,12 +34,13 @@ export function Parallax({
     if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const layers = [...el.querySelectorAll<HTMLElement>("[data-depth]")];
     let raf = 0;
+    let visible = false;
 
     const update = () => {
       raf = 0;
+      if (!visible) return;
       const rect = el.getBoundingClientRect();
       const vh = window.innerHeight;
-      if (rect.bottom < -200 || rect.top > vh + 200) return;
       const t =
         mode === "hero"
           ? Math.min(Math.max(-rect.top / rect.height, 0), 1)
@@ -52,10 +53,20 @@ export function Parallax({
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
-    update();
+    // Hanya hitung & promosikan ke GPU selagi bagian ini terlihat di layar
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        for (const l of layers) l.style.willChange = visible ? "transform" : "auto";
+        if (visible) onScroll();
+      },
+      { rootMargin: "120px 0px" },
+    );
+    io.observe(el);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
+      io.disconnect();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (raf) cancelAnimationFrame(raf);

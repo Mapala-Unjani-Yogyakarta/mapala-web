@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Mountain } from "lucide-react";
+import { BrandMark } from "@/components/site/brand-mark";
 import { getAdmin } from "@/lib/auth";
 import { supabaseConfigured } from "@/lib/supabase/public";
 import { ActionForm, SubmitButton } from "@/components/form";
@@ -18,7 +18,7 @@ export default async function LoginPage() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="mb-6 text-center">
-          <Mountain className="mx-auto text-brand-600" size={32} aria-hidden />
+          <BrandMark size={72} className="mx-auto" priority />
           <h1 className="font-display mt-2 text-3xl font-medium text-ink">Login Pengurus</h1>
           <p className="mt-1 text-sm text-muted">Masuk untuk mengelola website organisasi.</p>
         </div>

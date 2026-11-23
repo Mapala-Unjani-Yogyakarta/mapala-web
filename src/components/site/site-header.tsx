@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
-import { Menu, Mountain, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { cx } from "@/lib/utils";
 import { NAV } from "./nav";
+import { BrandMark } from "./brand-mark";
 
 /** true selama halaman masih di area hero (dipakai agar navbar berganti gaya). */
 function useInHeroZone() {
@@ -36,10 +37,10 @@ function HeaderBar({ orgName, overHero, pathname }: { orgName: string; overHero:
 
   return (
     <header className="fixed inset-x-0 top-3 z-50 px-3 sm:top-5 sm:px-6">
-      <div className={cx("mx-auto flex max-w-5xl items-center justify-between rounded-full py-2 pl-5 pr-2 transition-colors duration-300", overHero ? "glass" : "glass-light")}>
-        <Link href="/" className={cx("flex items-center gap-2 font-display text-xl", text)}>
-          <Mountain size={18} aria-hidden />
-          {orgName}
+      <div className={cx("mx-auto flex max-w-5xl items-center justify-between rounded-full py-1.5 pl-1.5 pr-2 transition-colors duration-300", overHero ? "glass" : "glass-light")}>
+        <Link href="/" className={cx("flex items-center gap-2.5 font-display text-xl", text)}>
+          <BrandMark size={38} priority />
+          <span className="max-w-[9.5rem] truncate sm:max-w-none">{orgName}</span>
         </Link>
 
         <nav aria-label="Menu utama" className="hidden items-center gap-7 md:flex">

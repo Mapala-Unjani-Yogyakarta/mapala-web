@@ -31,7 +31,7 @@ export function Layer({
     <div
       aria-hidden
       data-depth={depth || undefined}
-      className={`pointer-events-none absolute inset-x-0 ${depth ? "will-change-transform" : ""} ${className}`}
+      className={`pointer-events-none absolute inset-x-0 ${className}`}
       style={{ height: h, maxHeight: "720px", [pos]: offset }}
     >
       {children}
@@ -53,7 +53,7 @@ export function Mist({ color, depth = 0, h = "30%", bottom = "0%" }: { color: st
     <div
       aria-hidden
       data-depth={depth || undefined}
-      className="pointer-events-none absolute inset-x-0 will-change-transform"
+      className="pointer-events-none absolute inset-x-0"
       style={{ height: h, bottom, background: `linear-gradient(to top, ${color}, transparent)` }}
     />
   );
@@ -64,7 +64,7 @@ export function Glow({ className, color = "255 255 255", opacity = 0.6 }: { clas
   return (
     <div
       aria-hidden
-      className={`pointer-events-none absolute rounded-full blur-2xl ${className}`}
+      className={`pointer-events-none absolute rounded-full ${className}`}
       style={{ background: `radial-gradient(closest-side, rgb(${color} / ${opacity}), transparent)` }}
     />
   );

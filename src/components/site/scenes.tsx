@@ -7,7 +7,7 @@ import { Art, Birds, Glow, Layer, Mist, Stars, Tent, W, H, pines, ridgePath, rol
 import type { Peak } from "./scene-kit";
 
 const sunLayer = (children: React.ReactNode, depth = 0.3) => (
-  <div aria-hidden data-depth={depth} className="pointer-events-none absolute inset-0 will-change-transform">
+  <div aria-hidden data-depth={depth} className="pointer-events-none absolute inset-0">
     {children}
   </div>
 );

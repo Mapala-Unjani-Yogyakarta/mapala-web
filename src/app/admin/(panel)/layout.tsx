@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LogOut, Menu, Mountain } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
+import { BrandMark } from "@/components/site/brand-mark";
 import { requireAdmin } from "@/lib/auth";
 import { supabaseConfigured } from "@/lib/supabase/public";
 import { AdminNav, type AdminLink } from "@/components/admin-nav";
@@ -46,7 +47,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       <aside className="hidden w-60 shrink-0 flex-col justify-between border-r border-line bg-surface p-4 lg:sticky lg:top-0 lg:flex lg:h-screen">
         <div>
           <Link href="/admin" className="mb-6 flex items-center gap-2 px-3 py-1 font-display text-lg font-medium text-ink">
-            <Mountain size={20} aria-hidden className="text-brand-600" /> Panel Admin
+            <BrandMark size={32} /> Panel Admin
           </Link>
           <AdminNav links={links} />
         </div>
@@ -55,7 +56,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
 
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-line bg-surface px-4 py-3 lg:hidden">
         <Link href="/admin" className="flex items-center gap-2 font-display font-medium text-ink">
-          <Mountain size={18} aria-hidden className="text-brand-600" /> Panel Admin
+          <BrandMark size={28} /> Panel Admin
         </Link>
         <details className="relative">
           <summary className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-control border border-line-strong [&::-webkit-details-marker]:hidden">

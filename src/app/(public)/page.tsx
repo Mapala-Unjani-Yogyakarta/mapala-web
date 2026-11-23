@@ -8,6 +8,14 @@ import { AlbumCard } from "@/components/site/album-card";
 import { PersonCard } from "@/components/site/person-card";
 import { SceneSection, type SceneKey } from "@/components/site/scene-section";
 
+/** Teks ajakan di bagian paling bawah beranda. Ubah di sini. */
+const CTA = {
+  eyebrow: "Satu keluarga",
+  title: "Dari pendakian ke pendakian, kita tetap satu",
+  text: "Perbarui datamu supaya kabar dan kegiatan organisasi selalu sampai kepadamu.",
+  button: "Perbarui Data Saya",
+};
+
 export default async function HomePage() {
   const [s, stats, albums, period] = await Promise.all([getSettings(), getStats(), getAlbums(3), getCurrentPeriod()]);
   const positions = period ? (await getPositions(period.id)).slice(0, 4) : [];
@@ -90,11 +98,11 @@ export default async function HomePage() {
 
       <SceneSection scene="dawn" label="Bergabung">
         <div className="container-page pb-56 pt-32 text-center sm:pb-64">
-          <p className="eyebrow mb-4">Fajar baru</p>
-          <h2 className="section-title">Sudah jadi anggota?</h2>
-          <p className="mx-auto mt-4 max-w-md text-body">Lengkapi data dirimu di arsip organisasi. Cukup isi formulir, tanpa perlu membuat akun.</p>
+          <p className="eyebrow mb-4">{CTA.eyebrow}</p>
+          <h2 className="section-title mx-auto max-w-2xl">{CTA.title}</h2>
+          <p className="mx-auto mt-4 max-w-md text-body">{CTA.text}</p>
           <Link href="/isi-data" className={btnPrimary + " mt-8 !px-7 !py-3"}>
-            Isi Data Anggota <ArrowRight size={16} aria-hidden />
+            {CTA.button} <ArrowRight size={16} aria-hidden />
           </Link>
         </div>
       </SceneSection>

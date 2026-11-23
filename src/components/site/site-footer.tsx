@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { SiteSettings } from "@/lib/types";
 import { waNumber } from "@/lib/utils";
+import { BrandMark } from "./brand-mark";
 import { Ridge } from "./mountains";
 import { NAV } from "./nav";
 
@@ -13,9 +14,12 @@ export function SiteFooter({ s }: { s: SiteSettings }) {
       <Ridge seed={9} className="-mb-px block h-16 w-full text-brand-800 sm:h-24" />
       <div className="bg-brand-800 text-brand-100">
         <div className="container-page grid gap-10 py-14 md:grid-cols-3">
-          <div>
-            <p className="font-display text-3xl text-white">{s.org_name}</p>
-            <p className="mt-1 text-sm text-brand-200">{s.tagline}</p>
+          <div className="flex items-start gap-4">
+            <BrandMark size={64} className="ring-white/30" />
+            <div>
+              <p className="font-display text-3xl leading-tight text-white">{s.org_name}</p>
+              <p className="mt-1 text-sm text-brand-200">{s.tagline}</p>
+            </div>
           </div>
 
           <div className="text-sm">
