@@ -40,7 +40,7 @@ export function getStats() {
     const db = createPublicClient();
     const count = async (table: string) => {
       let q = db.from(table).select("id", { count: "exact", head: true });
-      if (table === "members") q = q.in("status", ["aktif", "luar_biasa"]); // sama dengan daftar di halaman Anggota
+      if (table === "members") q = q.neq("status", "non_aktif"); // sama dengan daftar di halaman Anggota
       const { count } = await q;
       return count ?? 0;
     };
@@ -229,4 +229,17 @@ export function getPostsByMembers(memberIds: string[]) {
       .limit(200);
     return (data ?? []) as AlumnusPost[];
   }, [] as AlumnusPost[]);
+}
+
+/** SEMUA anggota yang tampil publik (aktif, alumni, luar biasa), tanpa non-aktif. Untuk halaman Anggota. */
+export function getAllPublicMembers() {
+  return safe(async () => {
+    const { data } = await createPublicClient()
+      .from("members")
+      .select("id, full_name, nickname, angkatan, status, photo_url")
+      .neq("status", "non_aktif")
+      .order("full_name", { ascending: true })
+      .limit(3000);
+    return (data ?? []) as PublicMember[];
+  }, [] as PublicMember[]);
 }

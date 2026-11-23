@@ -60,10 +60,10 @@ export default async function AngkatanPage({ params }: Props) {
           {aktif.length === 0 ? (
             <EmptyState>Belum ada anggota aktif dari angkatan ini.</EmptyState>
           ) : (
-            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
               {aktif.map((m) => (
                 <li key={m.id} className="card overflow-hidden">
-                  <div className="relative aspect-[4/5] bg-gradient-to-br from-brand-100 to-sky-100">
+                  <div className="relative aspect-square bg-gradient-to-br from-brand-100 to-sky-100">
                     {m.photo_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={m.photo_url} alt={m.full_name} loading="lazy" className="h-full w-full object-cover" />

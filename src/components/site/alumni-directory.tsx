@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useDeferredValue, useMemo, useState } from "react";
-import { Briefcase, MapPin, PenLine, Search } from "lucide-react";
-import { Avatar, Badge, EmptyState, inputCls } from "@/components/ui";
+import { Briefcase, MapPin, PenLine } from "lucide-react";
+import { Avatar, Badge, EmptyState } from "@/components/ui";
 import { BIDANG, OPEN_TO, openToLabel } from "@/lib/profile-options";
-import { angkatanValue, cx } from "@/lib/utils";
+import { angkatanValue } from "@/lib/utils";
 import type { Alumnus, AlumnusPost } from "@/lib/types";
+import { FilterBar, FilterSelect } from "./filter-bar";
 import { IntroDialog } from "./intro-dialog";
 
 const NO_BIDANG = "Belum memilih bidang";
@@ -62,90 +63,74 @@ export function AlumniDirectory({ alumni, posts }: { alumni: Alumnus[]; posts: R
     return { total: filtered.length, list: [...map.entries()].sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0])) };
   }, [alumni, bidang, city, angkatan, open, query]);
 
-  const chip = (active: boolean) =>
-    cx("shrink-0 rounded-full border px-4 py-1.5 text-sm transition-colors", active ? "border-brand-700 bg-brand-700 text-white" : "border-line-strong bg-surface text-body hover:border-brand-400");
-  const row = "-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0";
-  const label = "mb-1.5 text-xs font-medium uppercase tracking-wider text-muted";
+  const activeCount = [bidang, city, open, angkatan].filter((v) => v !== "semua").length + (q ? 1 : 0);
+  const reset = () => {
+    setQ("");
+    setBidang("semua");
+    setCity("semua");
+    setOpen("semua");
+    setAngkatan("semua");
+  };
 
   return (
     <div>
-      <div className="space-y-5">
-        <div className="relative">
-          <Search size={16} aria-hidden className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-faint" />
-          <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, profesi, tempat kerja, atau kota" aria-label="Cari alumni" className={cx(inputCls, "!rounded-full !py-2.5 !pl-10")} />
-        </div>
+      <FilterBar
+        q={q}
+        onQ={setQ}
+        placeholder="Cari nama, profesi, atau kota"
+        activeCount={activeCount}
+        onReset={reset}
+        summary={`${groups.total} dari ${alumni.length} alumni`}
+      >
+        <FilterSelect label="Bidang" value={bidang} onChange={setBidang}>
+          <option value="semua">Semua bidang</option>
+          {[...BIDANG, NO_BIDANG].filter((b) => bidangCounts.has(b)).map((b) => (
+            <option key={b} value={b}>
+              {b} ({bidangCounts.get(b)})
+            </option>
+          ))}
+        </FilterSelect>
+        <FilterSelect label="Kota" value={city} onChange={setCity}>
+          <option value="semua">Semua kota</option>
+          {cities.map(([k, c]) => (
+            <option key={k} value={k}>
+              {c.label} ({c.n})
+            </option>
+          ))}
+        </FilterSelect>
+        <FilterSelect label="Terbuka untuk" value={open} onChange={setOpen}>
+          <option value="semua">Terbuka untuk: semua</option>
+          {OPEN_TO.map((o) => (
+            <option key={o.key} value={o.key}>
+              {o.label}
+            </option>
+          ))}
+        </FilterSelect>
+        <FilterSelect label="Angkatan" value={angkatan} onChange={setAngkatan}>
+          <option value="semua">Semua angkatan</option>
+          {angkatanList.map((a) => (
+            <option key={a} value={a}>
+              Angkatan {a}
+            </option>
+          ))}
+        </FilterSelect>
+      </FilterBar>
 
-        <div>
-          <p className={label}>Bidang</p>
-          <div className={row} role="group" aria-label="Filter bidang">
-            <div className="flex gap-2 pb-1">
-              <button type="button" aria-pressed={bidang === "semua"} onClick={() => setBidang("semua")} className={chip(bidang === "semua")}>Semua bidang</button>
-              {[...BIDANG, NO_BIDANG].filter((b) => bidangCounts.has(b)).map((b) => (
-                <button key={b} type="button" aria-pressed={bidang === b} onClick={() => setBidang(b)} className={chip(bidang === b)}>
-                  {b} <span className="opacity-60">· {bidangCounts.get(b)}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {cities.length > 0 && (
-          <div>
-            <p className={label}>Kota</p>
-            <div className={row} role="group" aria-label="Filter kota">
-              <div className="flex gap-2 pb-1">
-                <button type="button" aria-pressed={city === "semua"} onClick={() => setCity("semua")} className={chip(city === "semua")}>Semua kota</button>
-                {cities.map(([k, c]) => (
-                  <button key={k} type="button" aria-pressed={city === k} onClick={() => setCity(k)} className={chip(city === k)}>
-                    {c.label} <span className="opacity-60">· {c.n}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <p className={label}>Terbuka untuk</p>
-            <div className="flex flex-wrap gap-2" role="group" aria-label="Filter terbuka untuk">
-              <button type="button" aria-pressed={open === "semua"} onClick={() => setOpen("semua")} className={chip(open === "semua")}>Semua</button>
-              {OPEN_TO.map((o) => (
-                <button key={o.key} type="button" aria-pressed={open === o.key} onClick={() => setOpen(o.key)} className={chip(open === o.key)}>
-                  {o.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className={label} htmlFor="f-angkatan">Angkatan</label>
-            <select id="f-angkatan" value={angkatan} onChange={(e) => setAngkatan(e.target.value)} className={inputCls}>
-              <option value="semua">Semua angkatan</option>
-              {angkatanList.map((a) => (
-                <option key={a} value={a}>Angkatan {a}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <p className="mt-7 text-sm text-muted" aria-live="polite">Menampilkan {groups.total} dari {alumni.length} alumni</p>
-
-      <div className="mt-6 space-y-14">
+      <div className="mt-8 space-y-12">
         {groups.list.length === 0 && <EmptyState>Tidak ada alumni yang cocok. Coba ubah kata kunci atau filter.</EmptyState>}
         {groups.list.map(([b, items]) => (
           <section key={b} aria-labelledby={`bd-${b}`}>
-            <div className="mb-5 flex items-baseline justify-between gap-3 border-b border-line pb-3">
-              <h2 id={`bd-${b}`} className="font-display text-4xl tracking-tight text-ink">{b}</h2>
+            <div className="mb-4 flex items-baseline justify-between gap-3 border-b border-line pb-3">
+              <h2 id={`bd-${b}`} className="font-display text-3xl tracking-tight text-ink">{b}</h2>
               <span className="text-sm text-muted">{items.length} alumni</span>
             </div>
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {items.map((a) => {
                 const tulisan = posts[a.id] ?? [];
                 return (
-                  <li key={a.id} className="card flex flex-col gap-3 p-5">
+                  <li key={a.id} className="card flex flex-col gap-2.5 p-4">
                     <div className="flex items-center gap-3">
-                      <Avatar src={a.photo_url} name={a.full_name} size={56} />
+                      <Avatar src={a.photo_url} name={a.full_name} size={48} />
                       <div className="min-w-0">
                         <p className="truncate font-medium text-ink">{a.full_name}</p>
                         <p className="truncate text-sm text-muted">

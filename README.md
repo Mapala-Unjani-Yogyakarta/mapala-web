@@ -122,7 +122,7 @@ Bagian situs publik ada di `src/components/site/`: `hero`, `mountains`, `scenes`
 
 | Halaman | Tujuan | Disusun menurut | Isi kartu |
 |---|---|---|---|
-| `/anggota` | "Siapa kita **sekarang**?" | Angkatan | Foto besar, nama lapangan, **jabatan saat ini**, divisi. Hanya anggota **aktif** (+ luar biasa). |
+| `/anggota` | Seluruh keluarga: siapa saja yang pernah dan sedang bergabung | Angkatan | Foto besar, nama lapangan, **jabatan saat ini**, label **Alumni** / **Luar biasa**. Menampilkan **semua status** (filter Status tersedia). |
 | `/alumni` | "Ke mana mereka **melangkah**?" | **Bidang**, lalu filter kota / angkatan / terbuka untuk | Profesi, tempat kerja, kota, label **Terbuka untuk** (mentor, kolaborasi, rekrutmen, dukungan), tulisan di blog, kontak publik, tombol **Minta dikenalkan** |
 | `/angkatan`, `/angkatan/XV` | Identitas tiap angkatan | Angkatan | Julukan, motto, tahun masuk, foto bersama, anggota aktif, dan alumni |
 
