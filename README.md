@@ -105,9 +105,14 @@ Bagian situs publik ada di `src/components/site/`: `hero`, `mountains`, `scenes`
 
 ## Catatan penting
 
-- **Supabase gratis menjeda proyek** yang tidak aktif selama 1 minggu. Agar tidak mati, ada pengunjung yang membuka website tiap minggu, atau pasang pengecek gratis (mis. cron-job.org) yang membuka halaman beranda tiap 2–3 hari.
+- **Supabase gratis menjeda proyek** yang tidak aktif selama 1 minggu. Pencegahnya sudah dipasang: workflow `.github/workflows/keepalive.yml` memanggil `/api/health` (yang membaca database) tiap 3 hari. Alamat website diambil dari variabel repo `SITE_URL` (GitHub → Settings → Secrets and variables → Actions → **Variables**); perbarui bila domain berganti. Bisa dijalankan manual dari tab **Actions**.
 - **Penyimpanan foto gratis 1 GB.** Foto otomatis dikecilkan di browser; sekitar 3.000 foto muat.
-- **Captcha opsional:** bila formulir publik kena spam, aktifkan Cloudflare Turnstile (gratis) dan isi dua variabel `TURNSTILE_*` di `.env.local`/Vercel.
+- **Captcha Turnstile (opsional, gratis):** aktifkan bila formulir publik kena spam.
+  1. Buka dash.cloudflare.com → **Turnstile → Add widget**. Isi hostname dengan domain websitemu (dan `localhost` bila ingin menguji di komputer), mode **Managed**.
+  2. Salin **Site key** dan **Secret key**.
+  3. Di Vercel → Settings → Environment Variables tambahkan `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (Site key) dan `TURNSTILE_SECRET_KEY` (Secret key, tandai *Sensitive*), lalu **Redeploy**.
+  4. Tanpa kedua variabel itu captcha otomatis mati; formulir tetap dilindungi kolom jebakan bot dan batas kiriman per jam.
+- **Kelambatan halaman?** Buka `/api/health`: `region` adalah region fungsi Vercel dan `db_ms` lama kueri ke Supabase. Idealnya region fungsi sama dengan region proyek Supabase. Region fungsi diatur lewat `vercel.json` (`"regions": ["sin1"]` = Singapura). Ganti kodenya bila Supabase-mu di region lain (mis. `hnd1` Tokyo, `syd1` Sydney, `iad1` AS timur).
 - **Serah terima kepengurusan:** pastikan minimal dua orang menjadi *Owner* di Supabase, Vercel, GitHub, dan registrar domain.
 - Tautan pribadi anggota bersifat rahasia. Bila bocor, buat ulang atau cabut dari profil anggota.
 

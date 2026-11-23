@@ -9,6 +9,12 @@ import { btnGhost, Field } from "./ui";
 import { compressImage } from "@/lib/image";
 import type { FormState } from "@/lib/form-state";
 
+declare global {
+  interface Window {
+    turnstile?: { reset: () => void };
+  }
+}
+
 /** Formulir publik (tanpa login) untuk anggota baru maupun ubah data lewat tautan pribadi. */
 export function MemberForm({
   action,
@@ -47,6 +53,8 @@ export function MemberForm({
       prepare={(fd) => {
         if (photoRef.current) fd.set("photo", photoRef.current, "foto.jpg");
         else fd.delete("photo");
+        // Token Turnstile hanya berlaku sekali: minta token baru untuk percobaan berikutnya
+        window.setTimeout(() => window.turnstile?.reset(), 0);
       }}
     >
       {token && <input type="hidden" name="token" value={token} />}
