@@ -140,6 +140,17 @@ Bagian situs publik ada di `src/components/site/`: `hero`, `mountains`, `scenes`
 - **/alumni/gabung**: formulir publik khusus alumni (tanpa data pribadi; email wajib untuk pengurus). Masuk antrean Verifikasi dengan label "Mendaftar sebagai Alumni"; saat disetujui, statusnya otomatis Alumni.
 - **Migrasi `0004` wajib dijalankan sebelum deploy**: Supabase → SQL Editor → tempel [`supabase/migrations/0004_alumni_enrichment.sql`](supabase/migrations/0004_alumni_enrichment.sql) → Run (setelah `0003`). Tanpa itu halaman Alumni kosong dan penyimpanan anggota gagal.
 
+## Inventaris (khusus pengurus)
+
+Menu **Inventaris** di panel admin: daftar alat, stok, kondisi, peminjaman, dan jadwal servis. Tidak ada yang tampil di website publik.
+
+- **Alat:** nama, kategori, kode aset (opsional, unik), jumlah, kondisi (baik / perlu perbaikan / rusak / hilang), lokasi simpan, tanggal beli, selang servis (bulan), servis terakhir, catatan, dan tanda "boleh dipinjam mapala lain". Alat bisa diarsipkan.
+- **Peminjaman:** dicatat pengurus. Peminjam bisa **anggota** (dipilih dari daftar) atau **mapala lain** (nama + kontak penanggung jawab). Tiap catatan punya tanggal pinjam, tenggat, keperluan; pengembalian mencatat tanggal, kondisi, dan catatan, dan bisa sekaligus memperbarui kondisi alat.
+- **Aturan yang dijaga database:** stok tidak boleh terlampaui, alat rusak/hilang/diarsipkan tidak bisa dipinjam, alat bertanda "khusus anggota" tidak bisa ke mapala lain, jumlah alat tidak boleh di bawah yang sedang dipinjam, pinjaman yang sudah kembali tidak bisa dibuka lagi.
+- **Penanda:** pinjaman terlambat tampil merah dan jumlahnya muncul sebagai angka di menu; servis "segera" muncul 30 hari sebelum jatuh tempo.
+- Satu catatan alat = satu kondisi. Bila sebagian unit rusak, pisahkan sebagai catatan alat tersendiri.
+- **Migrasi `0005` wajib dijalankan sebelum deploy**: Supabase → SQL Editor → tempel [`supabase/migrations/0005_inventory.sql`](supabase/migrations/0005_inventory.sql) → Run (setelah `0004`).
+
 ## Aturan pengisian angkatan
 
 Angkatan adalah **nomor urut** (bukan tahun masuk) dan selalu disimpan sebagai angka Romawi (XV = angkatan ke-15).
