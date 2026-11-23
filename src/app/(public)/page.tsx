@@ -40,7 +40,7 @@ export default async function HomePage() {
           <div className="mt-20">
             <Stats
               items={[
-                { label: "Anggota terdata", value: stats.members, href: "/anggota" },
+                { label: "Anggota aktif", value: stats.members, href: "/anggota" },
                 { label: "Periode kepengurusan", value: stats.periods },
                 { label: "Album kegiatan", value: stats.albums },
                 { label: "Foto dokumentasi", value: stats.photos },

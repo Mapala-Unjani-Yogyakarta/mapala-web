@@ -41,6 +41,8 @@ export async function saveMember(_prev: FormState, fd: FormData): Promise<FormSt
     public_instagram: nz(f.public_instagram),
     public_linkedin: nz(f.public_linkedin),
     public_whatsapp: nz(f.public_whatsapp),
+    bidang: nz(f.bidang),
+    open_to: f.open_to,
     ...extra,
   };
   const privateCols = {
@@ -126,20 +128,20 @@ export async function importMembers(_prev: FormState, fd: FormData): Promise<For
   rows.forEach((raw, i) => {
     const line = i + 2; // baris 1 adalah judul kolom
     const get = (col: string) => String(raw[col] ?? "").trim();
-    const mapped: Record<string, string> = {};
-    for (const k of MEMBER_FIELD_KEYS) mapped[k] = ""; // kolom yang tak ada di CSV (mis. profil alumni) = kosong
+    const mapped: Record<string, string | string[]> = {};
+    for (const k of MEMBER_FIELD_KEYS) mapped[k] = k === "open_to" ? [] : ""; // kolom yang tak ada di CSV (mis. profil alumni) = kosong
     for (const [csvKey, key] of CSV_COLUMNS) mapped[key] = get(csvKey);
 
     const parsed = memberFieldsSchema.safeParse(mapped);
     if (!parsed.success) return errors.push(`Baris ${line}: ${firstError(parsed.error)}`);
-    const status = normStatus(mapped.status);
-    if (!status) return errors.push(`Baris ${line}: status "${mapped.status}" tidak dikenal`);
+    const status = normStatus(String(mapped.status));
+    if (!status) return errors.push(`Baris ${line}: status "${String(mapped.status)}" tidak dikenal`);
     const f = parsed.data;
     if (f.nim && knownNim.has(f.nim)) return errors.push(`Baris ${line}: NIM ${f.nim} sudah terdaftar`);
     if (f.nim) knownNim.add(f.nim);
 
     const id = crypto.randomUUID();
-    members.push({ id, full_name: f.full_name, nickname: nz(f.nickname), angkatan: nz(f.angkatan), member_number: nz(mapped.member_number), status });
+    members.push({ id, full_name: f.full_name, nickname: nz(f.nickname), angkatan: nz(f.angkatan), member_number: nz(String(mapped.member_number)), status });
     privates.push({
       member_id: id,
       nim: nz(f.nim),

@@ -15,6 +15,7 @@ export default async function UbahDataPage({ params }: { params: Promise<{ token
 
   let defaults: Record<string, string | null> | null = null;
   let photo: string | null = null;
+  let openTo: string[] = [];
   try {
     const db = createServiceClient();
     const { data: priv } = await db.from("member_private").select("*").eq("edit_token", token).maybeSingle();
@@ -23,6 +24,7 @@ export default async function UbahDataPage({ params }: { params: Promise<{ token
       if (member) {
         defaults = { ...priv, ...member };
         photo = member.photo_url;
+        openTo = (member.open_to as string[] | null) ?? [];
       }
     }
   } catch {
@@ -43,7 +45,7 @@ export default async function UbahDataPage({ params }: { params: Promise<{ token
           <>
             <p className="text-sm text-muted">Jangan bagikan tautan ini ke orang lain.</p>
             <div className="panel mt-4 p-5 sm:p-8">
-              <MemberForm action={submitMemberForm} defaults={defaults} token={token} currentPhoto={photo} angkatanOptions={angkatanOptions} />
+              <MemberForm action={submitMemberForm} defaults={defaults} token={token} currentPhoto={photo} angkatanOptions={angkatanOptions} defaultOpenTo={openTo} />
             </div>
           </>
         ) : (

@@ -24,7 +24,7 @@ function useInHeroZone() {
 export function SiteHeader({ orgName }: { orgName: string }) {
   const pathname = usePathname();
   const inHero = useInHeroZone();
-  const hasSceneHero = pathname === "/" || pathname.startsWith("/periode") || pathname.startsWith("/gallery") || pathname.startsWith("/anggota") || pathname.startsWith("/alumni") || pathname === "/blog";
+  const hasSceneHero = pathname === "/" || pathname.startsWith("/periode") || pathname.startsWith("/gallery") || pathname.startsWith("/anggota") || pathname === "/angkatan" || pathname.startsWith("/alumni") || pathname === "/blog";
   const overHero = hasSceneHero && inHero;
   // `key` mereset menu mobile setiap pindah halaman
   return <HeaderBar key={pathname} orgName={orgName} overHero={overHero} pathname={pathname} />;

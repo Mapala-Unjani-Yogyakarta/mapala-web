@@ -19,10 +19,14 @@ export default async function PanelLayout({ children }: { children: React.ReactN
 
   const { count: postsPending } = await admin.supabase.from("posts").select("id", { count: "exact", head: true }).eq("status", "submitted");
 
+  const { count: introNew } = await admin.supabase.from("intro_requests").select("id", { count: "exact", head: true }).eq("status", "baru");
+
   const links: AdminLink[] = [
     { href: "/admin", label: "Dashboard", icon: "dashboard" },
     { href: "/admin/verifikasi", label: "Verifikasi", icon: "verifikasi", badge: count ?? 0 },
     { href: "/admin/anggota", label: "Anggota", icon: "anggota" },
+    { href: "/admin/angkatan", label: "Profil Angkatan", icon: "angkatan" },
+    { href: "/admin/permintaan", label: "Permintaan Kenalan", icon: "permintaan", badge: introNew ?? 0 },
     { href: "/admin/periode", label: "Periode & Pengurus", icon: "periode" },
     { href: "/admin/gallery", label: "Gallery", icon: "gallery" },
     { href: "/admin/tulisan", label: "Blog & Berita", icon: "tulisan", badge: postsPending ?? 0 },

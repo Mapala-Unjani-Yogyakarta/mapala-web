@@ -4,6 +4,7 @@ export const NAV: { href: string; label: string; header?: boolean }[] = [
   { href: "/pengurus", label: "Pengurus" },
   { href: "/periode", label: "Periode" },
   { href: "/anggota", label: "Anggota" },
+  { href: "/angkatan", label: "Angkatan", header: false },
   { href: "/alumni", label: "Alumni" },
   { href: "/blog", label: "Blog" },
   { href: "/gallery", label: "Gallery" },

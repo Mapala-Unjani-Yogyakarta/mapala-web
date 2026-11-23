@@ -32,6 +32,8 @@ export type Member = {
   public_instagram?: string | null;
   public_linkedin?: string | null;
   public_whatsapp?: string | null;
+  bidang?: string | null;
+  open_to?: string[] | null;
 };
 
 /** Data anggota yang boleh tampil publik. */
@@ -91,14 +93,14 @@ export type Submission = {
   kind: "baru" | "ubah";
   status: "pending" | "approved" | "rejected";
   member_id: string | null;
-  payload: Record<string, string>;
+  payload: Record<string, string | string[]>;
   photo_url: string | null;
   reject_reason: string | null;
   submitted_at: string;
   reviewed_at: string | null;
 };
 
-export type Alumnus = Pick<Member, "id" | "full_name" | "nickname" | "angkatan" | "photo_url" | "profession" | "workplace" | "city" | "public_instagram" | "public_linkedin" | "public_whatsapp">;
+export type Alumnus = Pick<Member, "id" | "full_name" | "nickname" | "angkatan" | "photo_url" | "profession" | "workplace" | "city" | "public_instagram" | "public_linkedin" | "public_whatsapp" | "bidang" | "open_to">;
 
 export type PostKind = "blog" | "berita";
 export type PostStatus = "draft" | "submitted" | "published" | "rejected";
@@ -121,3 +123,17 @@ export type Post = {
 };
 
 export type PostSummary = Pick<Post, "id" | "slug" | "kind" | "title" | "excerpt" | "cover_url" | "author_name" | "published_at">;
+
+export type AngkatanProfile = {
+  code: string;
+  name: string | null;
+  motto: string | null;
+  entry_year: number | null;
+  photo_url: string | null;
+  description: string | null;
+};
+
+/** Jabatan anggota pada periode saat ini. */
+export type CurrentRole = { title: string; division: string | null };
+
+export type AlumnusPost = { id: string; slug: string; title: string; author_member_id: string };

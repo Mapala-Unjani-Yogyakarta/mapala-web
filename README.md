@@ -118,9 +118,19 @@ Bagian situs publik ada di `src/components/site/`: `hero`, `mountains`, `scenes`
 - **Redirect URLs**: tambahkan `https://mapalaunjaniyogyakarta.vercel.app/auth/callback` (dan `http://localhost:3000/auth/callback` bila menguji di komputer).
 - **Batas email**: layanan email bawaan Supabase sangat terbatas (hanya beberapa email per jam untuk seluruh proyek). Untuk penulis yang banyak, pasang SMTP sendiri (mis. Resend, gratis) di Authentication → SMTP Settings.
 
-## Halaman Anggota publik
+## Anggota, Alumni, dan Angkatan: tiga halaman, tiga tujuan
 
-`/anggota` menampilkan anggota yang **ditandai tampil di website** (kolom "Tampilkan di website" di profil anggota), dikelompokkan per angkatan, dengan pencarian dan filter status/angkatan. Yang tampil hanya nama, nama lapangan, angkatan, status, dan foto. Anggota berstatus **Non-aktif** tidak ditampilkan. Angkatan diurutkan dari yang terbaru; angka Romawi (XV) dan angka biasa (2022) sama-sama dikenali.
+| Halaman | Tujuan | Disusun menurut | Isi kartu |
+|---|---|---|---|
+| `/anggota` | "Siapa kita **sekarang**?" | Angkatan | Foto besar, nama lapangan, **jabatan saat ini**, divisi. Hanya anggota **aktif** (+ luar biasa). |
+| `/alumni` | "Ke mana mereka **melangkah**?" | **Bidang**, lalu filter kota / angkatan / terbuka untuk | Profesi, tempat kerja, kota, label **Terbuka untuk** (mentor, kolaborasi, rekrutmen, dukungan), tulisan di blog, kontak publik, tombol **Minta dikenalkan** |
+| `/angkatan`, `/angkatan/XV` | Identitas tiap angkatan | Angkatan | Julukan, motto, tahun masuk, foto bersama, anggota aktif, dan alumni |
+
+- Anggota berstatus **Non-aktif** tidak tampil di halaman publik mana pun. Anggota dengan "Tampilkan di website" dimatikan juga tersembunyi.
+- **Profil angkatan** diisi pengurus di Panel → **Profil Angkatan** (opsional; tanpa profil halaman angkatan tetap tampil).
+- **Bidang** dan **Terbuka untuk** diisi alumni sendiri (formulir / tautan pribadi) atau pengurus; daftar pilihannya ada di `src/lib/profile-options.ts` dan harus sama dengan batasan di migrasi `0003`.
+- **Minta dikenalkan**: kontak alumni TIDAK dibuka. Permintaan masuk ke Panel → **Permintaan Kenalan** (hanya terbaca pengurus, dilindungi captcha, jebakan bot, dan batas kiriman). Pengurus menanyakan kesediaan alumni lalu menyambungkan keduanya, dan menandai status (baru / diteruskan / selesai).
+- **Migrasi `0003` wajib dijalankan sebelum deploy**: Supabase → SQL Editor → tempel [`supabase/migrations/0003_alumni_network_angkatan.sql`](supabase/migrations/0003_alumni_network_angkatan.sql) → Run (setelah `0002`). Tanpa itu halaman Alumni kosong dan penyimpanan anggota di panel gagal.
 
 ## Aturan pengisian angkatan
 

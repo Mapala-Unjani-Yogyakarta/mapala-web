@@ -1,6 +1,6 @@
 import "server-only";
 import { createPublicClient } from "./supabase/public";
-import type { Album, Alumnus, Period, Photo, Post, PostSummary, PositionWithMember, PublicMember, SiteSettings } from "./types";
+import type { Album, Alumnus, AlumnusPost, AngkatanProfile, CurrentRole, Period, Photo, Post, PostSummary, PositionWithMember, PublicMember, SiteSettings } from "./types";
 
 /** Query publik: bila database belum siap, tampilkan halaman kosong alih-alih error. */
 async function safe<T>(fn: () => PromiseLike<T>, fallback: T): Promise<T> {
@@ -40,7 +40,7 @@ export function getStats() {
     const db = createPublicClient();
     const count = async (table: string) => {
       let q = db.from(table).select("id", { count: "exact", head: true });
-      if (table === "members") q = q.neq("status", "non_aktif"); // sama dengan daftar di halaman Anggota
+      if (table === "members") q = q.in("status", ["aktif", "luar_biasa"]); // sama dengan daftar di halaman Anggota
       const { count } = await q;
       return count ?? 0;
     };
@@ -134,13 +134,13 @@ export function getPhotos(albumId: string) {
   }, [] as Photo[]);
 }
 
-/** Anggota yang ditandai tampil publik (RLS), tanpa yang non-aktif. Hanya kolom publik. */
+/** Anggota aktif & luar biasa yang ditandai tampil publik (RLS). Alumni punya halaman sendiri. Hanya kolom publik. */
 export function getPublicMembers() {
   return safe(async () => {
     const { data } = await createPublicClient()
       .from("members")
       .select("id, full_name, nickname, angkatan, status, photo_url")
-      .neq("status", "non_aktif")
+      .in("status", ["aktif", "luar_biasa"])
       .order("full_name", { ascending: true })
       .limit(3000);
     return (data ?? []) as PublicMember[];
@@ -160,7 +160,7 @@ export function getAlumni() {
   return safe(async () => {
     const { data } = await createPublicClient()
       .from("members")
-      .select("id, full_name, nickname, angkatan, photo_url, profession, workplace, city, public_instagram, public_linkedin, public_whatsapp")
+      .select("id, full_name, nickname, angkatan, photo_url, profession, workplace, city, public_instagram, public_linkedin, public_whatsapp, bidang, open_to")
       .eq("status", "alumni")
       .order("full_name", { ascending: true })
       .limit(3000);
@@ -188,4 +188,45 @@ export function getPostBySlug(slug: string) {
     const { data } = await createPublicClient().from("posts").select("*").eq("slug", slug).eq("status", "published").maybeSingle();
     return (data ?? null) as Post | null;
   }, null as Post | null);
+}
+
+/** Jabatan tiap anggota pada periode saat ini: { id anggota → jabatan }. */
+export function getCurrentRoles() {
+  return safe(async () => {
+    const period = await getCurrentPeriod();
+    if (!period) return {} as Record<string, CurrentRole>;
+    const { data } = await createPublicClient()
+      .from("positions")
+      .select("member_id, title, division, sort_order")
+      .eq("period_id", period.id)
+      .order("sort_order", { ascending: true });
+    const out: Record<string, CurrentRole> = {};
+    for (const r of (data ?? []) as { member_id: string; title: string; division: string | null }[]) {
+      if (!out[r.member_id]) out[r.member_id] = { title: r.title, division: r.division };
+    }
+    return out;
+  }, {} as Record<string, CurrentRole>);
+}
+
+/** Profil angkatan (julukan, motto, tahun masuk, foto) yang sudah diisi pengurus. */
+export function getAngkatanProfiles() {
+  return safe(async () => {
+    const { data } = await createPublicClient().from("angkatan").select("*");
+    return (data ?? []) as AngkatanProfile[];
+  }, [] as AngkatanProfile[]);
+}
+
+/** Tulisan terbit milik anggota tertentu (untuk "alumni menulis"). */
+export function getPostsByMembers(memberIds: string[]) {
+  return safe(async () => {
+    if (memberIds.length === 0) return [] as AlumnusPost[];
+    const { data } = await createPublicClient()
+      .from("posts")
+      .select("id, slug, title, author_member_id")
+      .eq("status", "published")
+      .in("author_member_id", memberIds)
+      .order("published_at", { ascending: false })
+      .limit(200);
+    return (data ?? []) as AlumnusPost[];
+  }, [] as AlumnusPost[]);
 }

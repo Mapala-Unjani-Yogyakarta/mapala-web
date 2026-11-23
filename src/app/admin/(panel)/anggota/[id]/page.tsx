@@ -33,7 +33,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
       <div className="space-y-6">
         <Card>
           <h2 className="mb-4 font-semibold">Data anggota</h2>
-          <MemberAdminForm id={id} defaults={defaults} angkatanOptions={angkatanOptions} />
+          <MemberAdminForm id={id} defaults={defaults} angkatanOptions={angkatanOptions} openTo={(member.open_to as string[] | null) ?? []} />
         </Card>
 
         <Card>

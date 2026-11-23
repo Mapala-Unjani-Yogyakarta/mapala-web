@@ -9,12 +9,6 @@ import { btnGhost, Field } from "./ui";
 import { compressImage } from "@/lib/image";
 import type { FormState } from "@/lib/form-state";
 
-declare global {
-  interface Window {
-    turnstile?: { reset: () => void };
-  }
-}
-
 /** Formulir publik (tanpa login) untuk anggota baru maupun ubah data lewat tautan pribadi. */
 export function MemberForm({
   action,
@@ -22,12 +16,14 @@ export function MemberForm({
   token,
   currentPhoto,
   angkatanOptions,
+  defaultOpenTo,
 }: {
   action: (prev: FormState, fd: FormData) => Promise<FormState>;
   defaults?: MemberDefaults;
   token?: string;
   currentPhoto?: string | null;
   angkatanOptions?: string[];
+  defaultOpenTo?: string[];
 }) {
   const photoRef = useRef<Blob | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -68,7 +64,7 @@ export function MemberForm({
         </label>
       </div>
 
-      <MemberFields d={defaults} angkatanOptions={angkatanOptions} />
+      <MemberFields d={defaults} angkatanOptions={angkatanOptions} openTo={defaultOpenTo} />
 
       <Field label="Foto" hint="Foto wajah/setengah badan. Otomatis dikecilkan sebelum dikirim.">
         <div className="flex items-center gap-4">

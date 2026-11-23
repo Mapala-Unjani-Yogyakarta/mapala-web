@@ -1,10 +1,11 @@
 import { Field, inputCls } from "./ui";
 import { angkatanValue, buildAngkatanOptions } from "@/lib/utils";
+import { BIDANG, OPEN_TO } from "@/lib/profile-options";
 
 export type MemberDefaults = Partial<Record<string, string | null>>;
 
 /** Kolom isian anggota yang dipakai bersama oleh formulir publik dan panel admin. */
-export function MemberFields({ d = {}, angkatanOptions }: { d?: MemberDefaults; angkatanOptions?: string[] }) {
+export function MemberFields({ d = {}, angkatanOptions, openTo = [] }: { d?: MemberDefaults; angkatanOptions?: string[]; openTo?: string[] }) {
   const v = (k: string) => d[k] ?? "";
   const options = angkatanOptions ?? buildAngkatanOptions([]);
   const currentAngkatan = v("angkatan");
@@ -63,12 +64,37 @@ export function MemberFields({ d = {}, angkatanOptions }: { d?: MemberDefaults; 
           Bagian ini <strong className="text-ink">tampil untuk umum</strong> di halaman Alumni bila statusmu alumni. Isi hanya yang ingin kamu tampilkan, dan kosongkan sisanya.
         </p>
       </div>
+      <Field label="Bidang" hint="Dipakai untuk mengelompokkan alumni">
+        <select name="bidang" defaultValue={v("bidang")} className={inputCls}>
+          <option value="">— pilih bidang —</option>
+          {BIDANG.map((b) => (
+            <option key={b} value={b}>
+              {b}
+            </option>
+          ))}
+        </select>
+      </Field>
       <Field label="Profesi" hint="Contoh: Dokter, Guru, Software Engineer">
         <input name="profession" maxLength={120} defaultValue={v("profession")} className={inputCls} />
       </Field>
       <Field label="Tempat kerja / institusi">
         <input name="workplace" maxLength={120} defaultValue={v("workplace")} className={inputCls} />
       </Field>
+      <fieldset className="sm:col-span-2">
+        <legend className="mb-1 text-sm font-medium text-ink">Terbuka untuk</legend>
+        <p className="mb-2 text-xs text-muted">Opsional. Tampil sebagai label di profilmu agar orang tahu bagaimana bisa terhubung.</p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {OPEN_TO.map((o) => (
+            <label key={o.key} className="flex items-start gap-3 rounded-control border border-line bg-surface p-3 text-sm">
+              <input type="checkbox" name="open_to" value={o.key} defaultChecked={openTo.includes(o.key)} className="mt-0.5 h-4 w-4 accent-brand-700" />
+              <span>
+                <span className="font-medium text-ink">{o.label}</span>
+                <span className="block text-xs text-muted">{o.hint}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
       <Field label="Kota domisili">
         <input name="city" maxLength={80} defaultValue={v("city")} className={inputCls} />
       </Field>

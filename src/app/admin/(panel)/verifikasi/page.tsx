@@ -9,6 +9,9 @@ import { approveSubmission, rejectSubmission } from "./actions";
 
 const FIELDS = Object.keys(FIELD_LABELS);
 
+/** Nilai tampil: daftar (mis. "terbuka untuk") digabung dengan koma, kosong = "". */
+const str = (v: unknown): string => (Array.isArray(v) ? v.join(", ") : v == null ? "" : String(v));
+
 export default async function VerificationPage() {
   const { supabase } = await requireAdmin();
 
@@ -27,7 +30,7 @@ export default async function VerificationPage() {
         supabase.from("member_private").select("*").in("member_id", editIds),
       ])
     : [{ data: [] }, { data: [] }];
-  const current = new Map<string, Record<string, string | null>>();
+  const current = new Map<string, Record<string, unknown>>();
   for (const id of editIds) {
     const m = (members ?? []).find((x: { id: string }) => x.id === id);
     const p = (privs ?? []).find((x: { member_id: string }) => x.member_id === id);
@@ -47,9 +50,9 @@ export default async function VerificationPage() {
             return (
               <Card key={s.id}>
                 <div className="flex flex-wrap items-center gap-3">
-                  <Avatar src={s.photo_url ?? now?.photo_url} name={s.payload.full_name ?? "?"} size={48} />
+                  <Avatar src={s.photo_url ?? (now?.photo_url as string | null | undefined)} name={str(s.payload.full_name) || "?"} size={48} />
                   <div className="min-w-0 flex-1">
-                    <p className="font-semibold">{s.payload.full_name}</p>
+                    <p className="font-semibold">{str(s.payload.full_name)}</p>
                     <p className="text-xs text-muted">Dikirim {formatDate(s.submitted_at)}</p>
                   </div>
                   <Badge tone={s.kind === "baru" ? "brand" : "warn"}>{s.kind === "baru" ? "Anggota baru" : "Perubahan data"}</Badge>
@@ -70,8 +73,8 @@ export default async function VerificationPage() {
                   </thead>
                   <tbody className="divide-y divide-line">
                     {FIELDS.map((k) => {
-                      const next = s.payload[k] ?? "";
-                      const prev = (now?.[k] as string | null) ?? "";
+                      const next = str(s.payload[k]);
+                      const prev = str(now?.[k]);
                       if (!next && !prev) return null;
                       const changed = !!now && next !== prev;
                       return (
@@ -117,7 +120,7 @@ export default async function VerificationPage() {
           <ul className="divide-y divide-line card text-sm">
             {history.map((h) => (
               <li key={h.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5">
-                <span className="min-w-0 truncate">{h.payload.full_name}</span>
+                <span className="min-w-0 truncate">{str(h.payload.full_name)}</span>
                 <span className="flex items-center gap-2">
                   {h.reject_reason && <span className="text-xs text-muted">{h.reject_reason}</span>}
                   <Badge tone={h.status === "approved" ? "brand" : "danger"}>{h.status === "approved" ? "Disetujui" : "Ditolak"}</Badge>

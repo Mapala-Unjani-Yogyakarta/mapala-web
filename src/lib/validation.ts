@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { normalizeAngkatan } from "./utils";
+import { BIDANG, OPEN_TO_KEYS } from "./profile-options";
 
 const phone = z
   .string()
@@ -83,6 +84,8 @@ export const memberFieldsSchema = z.object({
   public_instagram: instagram,
   public_linkedin: linkedin,
   public_whatsapp: whatsapp,
+  bidang: z.enum(["", ...BIDANG], { message: "Bidang tidak valid" }),
+  open_to: z.array(z.enum(OPEN_TO_KEYS)).default([]),
 });
 
 export type MemberFields = z.infer<typeof memberFieldsSchema>;
@@ -90,9 +93,13 @@ export type MemberFields = z.infer<typeof memberFieldsSchema>;
 export const MEMBER_FIELD_KEYS = Object.keys(memberFieldsSchema.shape) as (keyof MemberFields)[];
 
 /** Ambil nilai dari FormData hanya untuk kolom yang dikenal (string kosong bila tidak ada). */
-export function readFields(fd: FormData): Record<string, string> {
-  const out: Record<string, string> = {};
+export function readFields(fd: FormData): Record<string, string | string[]> {
+  const out: Record<string, string | string[]> = {};
   for (const key of MEMBER_FIELD_KEYS) {
+    if (key === "open_to") {
+      out[key] = fd.getAll(key).filter((v): v is string => typeof v === "string");
+      continue;
+    }
     const v = fd.get(key);
     out[key] = typeof v === "string" ? v : "";
   }
@@ -120,4 +127,6 @@ export const FIELD_LABELS: Record<string, string> = {
   public_instagram: "Instagram (publik)",
   public_linkedin: "LinkedIn (publik)",
   public_whatsapp: "WhatsApp (publik)",
+  bidang: "Bidang",
+  open_to: "Terbuka untuk",
 };
