@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAngkatanProfiles, getCurrentRoles, getPublicMembers } from "@/lib/data";
+import { getAlumni, getAngkatanProfiles, getCurrentRoles, getPublicMembers } from "@/lib/data";
+import { angkatanValue } from "@/lib/utils";
 import { EmptyState } from "@/components/ui";
 import { SceneHero } from "@/components/site/scene-section";
 import { MemberDirectory } from "@/components/site/member-directory";
@@ -11,9 +12,14 @@ export const metadata: Metadata = {
 };
 
 export default async function AnggotaPage() {
-  const [members, roles, profiles] = await Promise.all([getPublicMembers(), getCurrentRoles(), getAngkatanProfiles()]);
+  const [members, roles, profiles, alumni] = await Promise.all([getPublicMembers(), getCurrentRoles(), getAngkatanProfiles(), getAlumni()]);
   const angkatanCount = new Set(members.map((m) => m.angkatan?.trim()).filter(Boolean)).size;
   const board = members.filter((m) => roles[m.id]).length;
+  // Angkatan yang tidak lagi punya anggota aktif (seluruhnya alumni) tidak punya blok di bawah, jadi ditautkan di sini.
+  const activeCodes = new Set(members.map((m) => m.angkatan?.trim()).filter(Boolean));
+  const alumniOnly = [...new Set([...alumni.map((a) => a.angkatan?.trim()), ...profiles.map((p) => p.code)].filter((c): c is string => !!c && !activeCodes.has(c)))].sort(
+    (a, b) => angkatanValue(b) - angkatanValue(a),
+  );
   const profileNames = Object.fromEntries(profiles.map((p) => [p.code, p.name]));
 
   return (
@@ -43,6 +49,20 @@ export default async function AnggotaPage() {
           </Link>{" "}
           berdasarkan bidang dan kota.
         </p>
+        {alumniOnly.length > 0 && (
+          <p className="mb-8 text-sm text-muted">
+            Angkatan yang seluruhnya sudah menjadi alumni:{" "}
+            {alumniOnly.map((c, i) => (
+              <span key={c}>
+                {i > 0 && ", "}
+                <Link href={`/angkatan/${c}`} className="font-medium text-brand-700 hover:text-brand-900 hover:underline">
+                  {c}
+                </Link>
+              </span>
+            ))}{" "}
+            →
+          </p>
+        )}
         {members.length === 0 ? <EmptyState>Belum ada anggota aktif yang ditampilkan.</EmptyState> : <MemberDirectory members={members} roles={roles} profiles={profileNames} />}
       </div>
     </>
